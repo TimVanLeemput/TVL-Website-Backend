@@ -1,0 +1,21 @@
+/.claude
+AGENTS.md
+LOAD_TESTING.md
+bombardier-linux-amd64
+.dotnet-home/
+dotnet-test.log
+dotnet-test-output.log
+ENVIRONMENTS.md
+*.user
+.github/
+.idea/
+Weekly_polls.ods
+
+# Build output
+bin/
+obj/
+
+# Sensitive config
+appsettings.Development.json
+.idea/.idea.VotingPoll/.idea/dataSources.xml
+.idea/.idea.VotingPoll/.idea/indexLayout.xml

@@ -1,0 +1,66 @@
+﻿using System.Security.Claims;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using VotingPoll.Core.Interfaces.ServicesInterfaces;
+using VotingPoll.Core.Models;
+using VotingPoll.Core.Models.DTOs;
+using VotingPoll.Infrastructure.Validation;
+
+namespace VotingPoll.API.Controllers;
+
+[ApiController]
+[Route("api/polls/{pollId}/vote")]
+public class VotesController : ControllerBase
+{
+    private readonly IVotingService _votingService;
+
+    private readonly CreateVoteRequestValidator _createVoteRequestValidator;
+
+    public VotesController(IVotingService votingService,
+        CreateVoteRequestValidator createVoteRequestValidator)
+    {
+        _votingService = votingService;
+        _createVoteRequestValidator = createVoteRequestValidator;
+    }
+
+    #region GET
+
+    [Authorize]
+    [HttpGet]
+    public async Task<ActionResult<PagedList<VoteDto>>> GetAllVotesForPoll(int pollId, int? page = null,
+        int? pageSize = null)
+    {
+        PagedList<VoteDto> votesDto = await _votingService.GetAllVotesForPoll(pollId, page, pageSize);
+
+        return Ok(votesDto);
+    }
+
+    [Authorize]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<VoteDto>?> GetById(int id)
+    {
+        VoteDto voteDto = await _votingService.GetById(id);
+
+        return Ok(voteDto);
+    }
+
+    #endregion
+
+    #region POST
+
+    // [Authorize]
+    [HttpPost]
+    public async Task<ActionResult<VoteConfirmationDto>> Create(int pollId, CreateVoteDto createVoteDto)
+    {
+        ValidationResult validationResult = await _createVoteRequestValidator.ValidateAsync(createVoteDto);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult);
+        string? userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        int? userId = userIdClaim != null ? int.Parse(userIdClaim) : null;
+
+        return await _votingService.Create(userId, pollId, createVoteDto);
+    }
+
+    #endregion
+}

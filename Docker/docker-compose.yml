@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: TVL-Website-Backend-Postgres
+    command: postgres -c max_connections=300
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: YourPassword123!
+      POSTGRES_DB: VotingPollDb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
