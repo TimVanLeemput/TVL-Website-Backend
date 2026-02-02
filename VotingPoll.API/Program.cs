@@ -1,34 +1,24 @@
-var builder = WebApplication.CreateBuilder(args);
+//  The order is strict:
+//1. Register services     (builder.Services.Add...) -> What the app will need and use
+//2. Build the app         (builder.Build()) -> Builds the app
+// -----------------------------------------------------------------------------------------------------------------
+//3. Configure pipeline    (app.Use..., app.Map...)
+//4. Run                   (app.Run())
 
-// Add services to the container.
 
-var app = builder.Build();
+// --------------------------------------------------------APP CONTAINER / SETUP--------------------------------------
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Configure the HTTP request pipeline.
+builder.Services.AddControllers();
 
-app.UseHttpsRedirection();
+WebApplication app = builder.Build();
+// ----------------------------------------------CONTAINER IS SEALED AFTER THIS POINT-------------------------------
+// -------------------------------------------------APP IS RUNNING AFTER THIS POINT---------------------------------
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.MapControllers();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-});
+// app.UseHttpsRedirection();
+
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
