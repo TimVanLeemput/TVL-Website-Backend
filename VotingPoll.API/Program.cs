@@ -7,13 +7,21 @@
 
 
 // --------------------------------------------------------APP CONTAINER / SETUP--------------------------------------
+
+using VotingPoll.API.Middleware;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddProblemDetails();
+
 WebApplication app = builder.Build();
 // ----------------------------------------------CONTAINER IS SEALED AFTER THIS POINT-------------------------------
 // -------------------------------------------------APP IS RUNNING AFTER THIS POINT---------------------------------
+app.UseMiddleware<MaintenanceModeMiddleware>();
+app.UseMiddleware<GlobalExceptionMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.MapControllers();
 
@@ -21,4 +29,3 @@ app.MapControllers();
 
 
 app.Run();
-

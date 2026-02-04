@@ -53,6 +53,12 @@ public class PollsController : ControllerBase
         if (id == 1) return NoContent();
         return NotFound();
     }
+    
+    [HttpGet("error")]
+    public ActionResult TestError()
+    {
+        throw new InvalidOperationException("Test exception!");
+    }
 }
 
 // Temporary classes — will become proper DTOs later
