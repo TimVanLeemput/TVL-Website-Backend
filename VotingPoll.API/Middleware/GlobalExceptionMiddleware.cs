@@ -15,6 +15,7 @@ public class GlobalExceptionMiddleware
     {
         try
         {
+            _logger.LogInformation("Maintenance Mode is not Active - Entering Global Exception Middleware");
             await _next(context); // waits for the whole pipeline to complete
         }
         catch (Exception ex)

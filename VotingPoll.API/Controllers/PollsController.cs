@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using VotingPoll.API.Data;
+using VotingPoll.API.Entities;
 
 namespace VotingPoll.API.Controllers;
 
@@ -6,71 +9,89 @@ namespace VotingPoll.API.Controllers;
 [Route("api/[controller]")]
 public class PollsController : ControllerBase
 {
-    [HttpGet]
-    public ActionResult<List<PollResponse>> GetAll()
+    AppDbContext _context;
+
+    public PollsController(AppDbContext context)
     {
-        // Hardcoded for now — database comes later
-        List<PollResponse> polls = new List<PollResponse>
-        {
-            new PollResponse { Id = 1, Title = "Favorite Color", TotalVotes = 42 },
-            new PollResponse { Id = 2, Title = "Best Programming Language", TotalVotes = 128 }
-        };
+        _context = context;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<Poll>>> GetAll()
+    {
+        List<Poll> polls = await _context.Polls.ToListAsync();
         return Ok(polls);
     }
-    
+
 
     [HttpGet("{id}")]
-    public ActionResult<PollResponse> GetById(int id)
+    public async Task<ActionResult<Poll>> GetById(int id)
     {
-        if (id == 1)
-        {
-            return Ok(new PollResponse { Id = 1, Title = "Favorite Color", TotalVotes = 42 });
-        }
-
-        if (id == 2)
-        {
-            return Ok(new PollResponse { Id = 2, Title = "Best Programming Language", TotalVotes = 128 });
-        }
-
-        return NotFound();
+        Poll? pollToGet = await _context.Polls.FindAsync(id);
+        if (pollToGet == null) return NotFound();
+        return Ok(pollToGet);
     }
 
     [HttpPost]
-    public ActionResult<PollResponse> Create(CreatePollRequest request)
+    public async Task<ActionResult<Poll>> Create(CreatePollRequest request)
     {
-        PollResponse created = new PollResponse
+        Poll createdPoll = new Poll
         {
-            Id = 3,
             Title = request.Title,
-            TotalVotes = 0
+            TotalVotes = 0,
+            CreatedAt = DateTime.UtcNow
         };
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        await _context.Polls.AddAsync(createdPoll);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetById), new { id = createdPoll.Id }, createdPoll);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<Poll>> AddTotalVote(int id, int amountToIncrement = 1)
+    {
+        Poll poll = await _context.Polls.FindAsync(id);
+        if (poll == null) return NotFound();
+        poll.TotalVotes += amountToIncrement;
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpPost("{id}")]
+    public async Task<ActionResult<PollOption>> AddPollOption(int id, CreatePollOptionRequest
+        request)
+    {
+        Poll? poll = await _context.Polls.FindAsync(id);
+        if (poll == null) return NotFound();
+
+        PollOption pollOption = new PollOption
+        {
+            PollOptionName = request.PollOptionName,
+            PollId = id,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.PollOptions.Add(pollOption);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetById), new { id = pollOption.Id }, pollOption);
     }
 
     [HttpDelete("{id}")]
-    public ActionResult DeleteById(int id)
+    public async Task<ActionResult<Poll>> Delete(int id)
     {
-        if (id == 1) return NoContent();
-        return NotFound();
-    }
-    
-    [HttpGet("error")]
-    public ActionResult TestError()
-    {
-        throw new InvalidOperationException("Test exception!");
+        Poll pollToDelete = await _context.Polls.FindAsync(id);
+        if (pollToDelete == null) return NotFound();
+        _context.Polls.Remove(pollToDelete);
+        await _context.SaveChangesAsync();
+        return NoContent();
     }
 }
-
-// Temporary classes — will become proper DTOs later
-public class PollResponse
-{
-    public int Id { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public int TotalVotes { get; set; }
-}
-
 
 public class CreatePollRequest
 {
     public string Title { get; set; } = string.Empty;
+}
+
+public class CreatePollOptionRequest
+{
+    public string PollOptionName { get; set; } = string.Empty;
 }

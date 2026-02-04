@@ -27,9 +27,15 @@ public class MaintenanceModeMiddleware
         var section = _configuration.GetSection("MaintenanceMode").Get<MaintenanceModeOptions>();
         bool isAnyModesTrue = section?.Modes != null && (section.Modes.Any(x => x));
         if (isAnyModesTrue)
+        {
             _logger.LogInformation($"Maintenance Mode is Active : {isAnyModesTrue}");
+            context.Response.StatusCode = 503;
+            return;
+        }
 
-        await _next(context);
+        await _next(context);  //It's not just "call the next middleware" - it's "call the
+        // next middleware and wait for it to fully complete, including the response."
+
         // Check if any of the maintenance modes are true - if so, return 503
         // An other syntax for the TryParse: 
         //.Any(x =>

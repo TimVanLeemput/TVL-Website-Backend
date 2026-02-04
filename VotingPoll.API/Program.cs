@@ -8,18 +8,24 @@
 
 // --------------------------------------------------------APP CONTAINER / SETUP--------------------------------------
 
+using Microsoft.EntityFrameworkCore;
+using VotingPoll.API.Data;
 using VotingPoll.API.Middleware;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+    options.JsonSerializerOptions.ReferenceHandler =
+        System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
-builder.Services.AddProblemDetails();
 
 WebApplication app = builder.Build();
 // ----------------------------------------------CONTAINER IS SEALED AFTER THIS POINT-------------------------------
 // -------------------------------------------------APP IS RUNNING AFTER THIS POINT---------------------------------
-app.UseMiddleware<MaintenanceModeMiddleware>();
+// app.UseMiddleware<MaintenanceModeMiddleware>();
 app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 

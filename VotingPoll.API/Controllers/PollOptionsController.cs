@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using VotingPoll.API.Data;
+using VotingPoll.API.Entities;
 
 namespace VotingPoll.API.Controllers;
 
@@ -6,23 +9,18 @@ namespace VotingPoll.API.Controllers;
 [Route("api/polls/{id}/options")]
 public class PollOptionsController : ControllerBase
 {
-    [HttpGet]
-    public ActionResult<List<PollResponse>> GetAllOptionsForPoll()
-    {
-        // Hardcoded for now — a database comes later
-        List<PollOption> pollOptions = new List<PollOption>()
-        {
-            new PollOption { Id = 1, PollOptionName = "Red" },
-            new PollOption { Id = 2, PollOptionName = "Blue" },
-            new PollOption { Id = 3, PollOptionName = "Green" }
-        };
+    private readonly AppDbContext _context;
 
+    public PollOptionsController(AppDbContext context)
+    {
+        _context = context;
+    }
+    //
+    [HttpGet]
+    public async Task<ActionResult<List<PollOption>>> GetAllOptionsForPoll(Poll poll)
+    {
+        List<PollOption> pollOptions =
+            await _context.Polls.Where(x => x.Id == poll.Id).SelectMany(x => x.AllPollOptions).ToListAsync();
         return Ok(pollOptions);
     }
-}
-
-public class PollOption
-{
-    public int Id { get; set; }
-    public string PollOptionName { get; set; } = string.Empty;
 }
