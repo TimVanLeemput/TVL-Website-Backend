@@ -46,16 +46,6 @@ public class PollsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = createdPoll.Id }, createdPoll);
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult<Poll>> AddTotalVote(int id, int amountToIncrement = 1)
-    {
-        Poll poll = await _context.Polls.FindAsync(id);
-        if (poll == null) return NotFound();
-        poll.TotalVotes += amountToIncrement;
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
-
     [HttpPost("{id}")]
     public async Task<ActionResult<PollOption>> AddPollOption(int id, CreatePollOptionRequest
         request)
@@ -81,6 +71,16 @@ public class PollsController : ControllerBase
         Poll pollToDelete = await _context.Polls.FindAsync(id);
         if (pollToDelete == null) return NotFound();
         _context.Polls.Remove(pollToDelete);
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+    
+    [HttpPut("{id}")]
+    public async Task<ActionResult<Poll>> UpdatePoll(int id, Poll? pollIn)
+    {
+        Poll? pollToUpdate = await _context.Polls.FindAsync(id);
+        if (pollToUpdate == null) return NotFound();
+        pollToUpdate.Title = pollIn?.Title;
         await _context.SaveChangesAsync();
         return NoContent();
     }
