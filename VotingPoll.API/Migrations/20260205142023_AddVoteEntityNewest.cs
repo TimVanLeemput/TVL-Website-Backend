@@ -5,7 +5,7 @@
 namespace VotingPoll.API.Migrations
 {
     /// <inheritdoc />
-    public partial class WorkingMigrationForPollAndPollOptions : Migration
+    public partial class AddVoteEntityNewest : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

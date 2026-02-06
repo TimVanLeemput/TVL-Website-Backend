@@ -74,13 +74,18 @@ public class PollsController : ControllerBase
         await _context.SaveChangesAsync();
         return NoContent();
     }
-    
+
     [HttpPut("{id}")]
     public async Task<ActionResult<Poll>> UpdatePoll(int id, Poll? pollIn)
     {
         Poll? pollToUpdate = await _context.Polls.FindAsync(id);
         if (pollToUpdate == null) return NotFound();
-        pollToUpdate.Title = pollIn?.Title;
+        if (pollIn != null)
+        {
+            pollToUpdate.Title = pollIn.Title;
+            pollToUpdate.TotalVotes = pollIn.TotalVotes;
+        }
+
         await _context.SaveChangesAsync();
         return NoContent();
     }

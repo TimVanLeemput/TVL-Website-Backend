@@ -9,4 +9,10 @@ public class AppDbContext : DbContext
 
     public DbSet<Poll> Polls { get; set; }
     public DbSet<PollOption> PollOptions { get; set; }
+    public DbSet<Vote> Votes { get; set; }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Poll>().HasData(new Poll { Id = 1, Title = "Test Poll" });
+    }
 }

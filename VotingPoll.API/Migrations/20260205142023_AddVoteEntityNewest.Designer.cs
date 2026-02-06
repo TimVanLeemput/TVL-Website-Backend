@@ -12,8 +12,8 @@ using VotingPoll.API.Data;
 namespace VotingPoll.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260204143111_AddingPollOptions")]
-    partial class AddingPollOptions
+    [Migration("20260205142023_AddVoteEntityNewest")]
+    partial class AddVoteEntityNewest
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,7 +40,6 @@ namespace VotingPoll.API.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TotalVotes")
@@ -49,6 +48,15 @@ namespace VotingPoll.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Polls");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Title = "Test Poll",
+                            TotalVotes = 0
+                        });
                 });
 
             modelBuilder.Entity("VotingPoll.API.Entities.PollOption", b =>
@@ -79,6 +87,24 @@ namespace VotingPoll.API.Migrations
                     b.ToTable("PollOptions");
                 });
 
+            modelBuilder.Entity("VotingPoll.API.Entities.Vote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PollOptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PollOptionId");
+
+                    b.ToTable("Votes");
+                });
+
             modelBuilder.Entity("VotingPoll.API.Entities.PollOption", b =>
                 {
                     b.HasOne("VotingPoll.API.Entities.Poll", "Poll")
@@ -90,9 +116,23 @@ namespace VotingPoll.API.Migrations
                     b.Navigation("Poll");
                 });
 
+            modelBuilder.Entity("VotingPoll.API.Entities.Vote", b =>
+                {
+                    b.HasOne("VotingPoll.API.Entities.PollOption", null)
+                        .WithMany("AllVotes")
+                        .HasForeignKey("PollOptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("VotingPoll.API.Entities.Poll", b =>
                 {
                     b.Navigation("AllPollOptions");
+                });
+
+            modelBuilder.Entity("VotingPoll.API.Entities.PollOption", b =>
+                {
+                    b.Navigation("AllVotes");
                 });
 #pragma warning restore 612, 618
         }
