@@ -1,0 +1,15 @@
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\obj\Debug\net10.0\VotingPoll.Core.csproj.AssemblyReference.cache
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\obj\Debug\net10.0\VotingPoll.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\obj\Debug\net10.0\VotingPoll.Core.AssemblyInfoInputs.cache
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\obj\Debug\net10.0\VotingPoll.Core.AssemblyInfo.cs
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\obj\Debug\net10.0\VotingPoll.Core.csproj.CoreCompileInputs.cache
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\obj\Debug\net10.0\VotingPoll.Core.sourcelink.json
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\bin\Debug\net10.0\VotingPoll.Core.deps.json
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\bin\Debug\net10.0\VotingPoll.Core.runtimeconfig.json
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\bin\Debug\net10.0\VotingPoll.Core.dll
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\bin\Debug\net10.0\VotingPoll.Core.pdb
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\obj\Debug\net10.0\VotingPoll.Core.dll
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\obj\Debug\net10.0\refint\VotingPoll.Core.dll
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\obj\Debug\net10.0\VotingPoll.Core.pdb
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\obj\Debug\net10.0\VotingPoll.Core.genruntimeconfig.cache
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Core\obj\Debug\net10.0\ref\VotingPoll.Core.dll

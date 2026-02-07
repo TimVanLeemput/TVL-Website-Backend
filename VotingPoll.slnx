@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/VotingPoll.API/VotingPoll.API.csproj" />
+    <Project Path="src/VotingPoll.Core/VotingPoll.Core.csproj" />
+    <Project Path="src/VotingPoll.Infrastructure/VotingPoll.Infrastructure.csproj" />
+  </Folder>
+</Solution>
