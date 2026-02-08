@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace VotingPoll.Core.Middleware;
+namespace VotingPoll.API.Middleware;
 using System.Diagnostics;
 
 public class RequestLoggingMiddleware

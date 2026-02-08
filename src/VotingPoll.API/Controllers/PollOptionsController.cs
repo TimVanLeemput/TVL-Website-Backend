@@ -15,12 +15,12 @@ public class PollOptionsController : ControllerBase
     {
         _context = context;
     }
-    //
+
     [HttpGet]
-    public async Task<ActionResult<List<PollOption>>> GetAllOptionsForPoll(Poll poll)
+    public async Task<ActionResult<List<PollOption>>> GetAllOptionsForPoll(int id)
     {
         List<PollOption> pollOptions =
-            await _context.Polls.Where(x => x.Id == poll.Id).SelectMany(x => x.AllPollOptions!).ToListAsync();
+            await _context.PollOptions.Where(o => o.PollId == id).ToListAsync();
         return Ok(pollOptions);
     }
 }

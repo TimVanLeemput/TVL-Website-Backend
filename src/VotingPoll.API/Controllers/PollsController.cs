@@ -76,9 +76,11 @@ public class PollsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Poll>> Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        Poll pollToDelete = await _context.Polls.FindAsync(id) ?? throw new InvalidOperationException();
+        Poll? pollToDelete = await _context.Polls.FindAsync(id);
+        if (pollToDelete == null) return NotFound();
+
         _context.Polls.Remove(pollToDelete);
         await _context.SaveChangesAsync();
         return NoContent();

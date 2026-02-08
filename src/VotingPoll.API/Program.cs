@@ -9,7 +9,7 @@
 // --------------------------------------------------------APP CONTAINER / SETUP--------------------------------------
 
 using Microsoft.EntityFrameworkCore;
-using VotingPoll.Core.Middleware;
+using VotingPoll.API.Middleware;
 using VotingPoll.Infrastructure.Data;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -18,9 +18,10 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler =
         System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseSqlServer(builder.Configuration
+            .GetConnectionString("DefaultConnection"),
+        b => b.MigrationsAssembly("VotingPoll.API"))
 );
-
 
 WebApplication app = builder.Build();
 // ----------------------------------------------CONTAINER IS SEALED AFTER THIS POINT-------------------------------

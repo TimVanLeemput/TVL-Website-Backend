@@ -16,18 +16,19 @@ public class AppDbContext : DbContext
     // Fluent API
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //One-to-many relationships 
-        modelBuilder.Entity<PollOption>()
-            .HasOne(po => po.Poll)
-            .WithMany(p => p.AllPollOptions)
-            .HasForeignKey(po => po.PollId)
-            .OnDelete(DeleteBehavior.Cascade);
-
         modelBuilder.Entity<Vote>()
             .HasOne(v => v.Poll)
             .WithMany()
             .HasForeignKey(v => v.PollId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Vote>()
+            .HasOne(v => v.PollOption)
+            .WithMany(po => po.AllVotes)
+            .HasForeignKey(v => v.PollOptionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
         
         // Seed data
         modelBuilder.Entity<Poll>().HasData(

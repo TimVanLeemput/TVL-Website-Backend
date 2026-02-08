@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace VotingPoll.Core.Middleware;
+namespace VotingPoll.API.Middleware;
 
 public class MaintenanceModeMiddleware
 {
