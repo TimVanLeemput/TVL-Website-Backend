@@ -11,12 +11,14 @@
 using Microsoft.EntityFrameworkCore;
 using VotingPoll.API.Middleware;
 using VotingPoll.Infrastructure.Data;
+using VotingPoll.Infrastructure.Repositories;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers().AddJsonOptions(options =>
-    options.JsonSerializerOptions.ReferenceHandler =
-        System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
+builder.Services.AddScoped<IPollRepository, PollRepository>();
+builder.Services.AddScoped<IPollOptionRepository, PollOptionRepository>();
+builder.Services.AddControllers();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration
             .GetConnectionString("DefaultConnection"),

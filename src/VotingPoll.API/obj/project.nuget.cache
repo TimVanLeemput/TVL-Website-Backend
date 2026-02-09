@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "0qYvNFPQ19k=",
+  "dgSpecHash": "Mm5YAqqX/hI=",
   "success": true,
-  "projectFilePath": "C:\\Users\\vanle\\Documents\\GitHub\\Website\\TVL-Website-Backend\\src\\VotingPoll.API\\VotingPoll.API.csproj",
+  "projectFilePath": "C:\\Users\\vanle\\Documents\\GitHub\\Website\\TVL-Website-Backend\\src\\votingpoll.api\\VotingPoll.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\vanle\\.nuget\\packages\\azure.core\\1.47.1\\azure.core.1.47.1.nupkg.sha512",
     "C:\\Users\\vanle\\.nuget\\packages\\azure.identity\\1.14.2\\azure.identity.1.14.2.nupkg.sha512",

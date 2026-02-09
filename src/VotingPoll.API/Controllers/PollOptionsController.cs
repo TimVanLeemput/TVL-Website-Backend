@@ -1,26 +1,51 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using VotingPoll.Core.Entities;
-using VotingPoll.Infrastructure.Data;
+using VotingPoll.Core.DTOs;
+using VotingPoll.Infrastructure.Repositories;
 
-namespace VotingPoll.Core.Controllers;
+namespace VotingPoll.API.Controllers;
 
 [ApiController]
 [Route("api/polls/{id}/options")]
 public class PollOptionsController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IPollOptionRepository _pollOptionRepository;
 
-    public PollOptionsController(AppDbContext context)
+    public PollOptionsController(IPollOptionRepository pollOptionRepository)
     {
-        _context = context;
+        _pollOptionRepository = pollOptionRepository;
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<PollOption>>> GetAllOptionsForPoll(int id)
+    public async Task<ActionResult<List<PollOptionDto>>> GetAllOptionsForPoll(int id)
     {
-        List<PollOption> pollOptions =
-            await _context.PollOptions.Where(o => o.PollId == id).ToListAsync();
-        return Ok(pollOptions);
+        List<PollOption> pollOptions = await _pollOptionRepository.GetAllAsync(id);
+        List<PollOptionDto> pollOptionDtos = pollOptions.Select(x => new PollOptionDto
+        {
+            Id = x.Id,
+            PollId = x.PollId,
+            CreatedAt = x.CreatedAt,
+            PollOptionName = x.PollOptionName
+        }).ToList();
+
+        return Ok(pollOptionDtos);
+    }
+
+    [HttpGet("{pollOptionId}")]
+    public async Task<ActionResult<PollOptionDto>> GetPollOption(int id, int pollOptionId)
+    {
+        PollOption pollOption = await _pollOptionRepository.GetAsync(pollOptionId);
+        if (pollOption == null)
+            return NotFound();
+        if (pollOption.PollId != id)
+            return NotFound();
+        PollOptionDto pollOptionDto = new PollOptionDto
+        {
+            Id = pollOption.Id,
+            PollOptionName = pollOption.PollOptionName,
+            PollId = pollOption.PollId,
+            TotalVotes = pollOption.TotalVotes,
+            CreatedAt = pollOption.CreatedAt,
+        };
+        return Ok(pollOptionDto);
     }
 }

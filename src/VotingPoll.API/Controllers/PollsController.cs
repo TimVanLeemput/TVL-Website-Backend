@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using VotingPoll.Core.DTOs;
 using VotingPoll.Core.Entities;
-using VotingPoll.Infrastructure.Data;
+using VotingPoll.Infrastructure.Repositories;
 
 namespace VotingPoll.API.Controllers;
 
@@ -9,137 +9,137 @@ namespace VotingPoll.API.Controllers;
 [Route("api/[controller]")]
 public class PollsController : ControllerBase
 {
-    AppDbContext _context;
+    IPollRepository _pollRepository;
+    IPollOptionRepository _pollOptionRepository;
 
-    public PollsController(AppDbContext context)
+    public PollsController(IPollRepository pollRepository,
+        IPollOptionRepository pollOptionRepository)
     {
-        _context = context;
+        _pollRepository = pollRepository;
+        _pollOptionRepository = pollOptionRepository;
     }
 
     #region GET
 
     [HttpGet]
-    public async Task<ActionResult<List<Poll>>> GetAll()
+    public async Task<ActionResult<List<PollDto>>> GetAll()
     {
-        List<Poll> polls = await _context.Polls.ToListAsync();
-        return Ok(polls);
+        List<Poll> polls = await _pollRepository.GetAllAsync();
+        List<PollDto> pollDtos = polls.Select(poll => new PollDto
+        {
+            Id = poll.Id,
+            Title = poll.Title,
+            TotalVotes = poll.TotalVotes,
+            CreatedAt = poll.CreatedAt,
+            ClosesAt = poll.ClosesAt
+        }).ToList();
+        return Ok(pollDtos);
     }
 
-
     [HttpGet("{id}")]
-    public async Task<ActionResult<Poll>> GetById(int id)
+    public async Task<ActionResult<PollDto>> GetById(int id)
     {
-        // Poll? pollToGet = await _context.Polls.FindAsync(id);
-        Poll? pollToGet =
-            await _context.Polls
-                .Include(x => x.AllPollOptions)!
-                .ThenInclude(x => x.AllVotes)
-                .FirstOrDefaultAsync(x => x.Id == id);
+        Poll? pollToGet = await _pollRepository.GetByIdAsync(id);
         if (pollToGet == null) return NotFound();
-        return Ok(pollToGet);
+        List<PollOptionDto>? optionDtos = pollToGet.AllPollOptions.Select(options =>
+            new PollOptionDto
+            {
+                Id = options.Id,
+                PollOptionName = options.PollOptionName,
+                PollId = options.PollId,
+                TotalVotes = options.TotalVotes,
+                CreatedAt = options.CreatedAt
+            }).ToList();
+
+        PollDto pollDto = new PollDto
+        {
+            Id = pollToGet.Id,
+            Title = pollToGet.Title,
+            TotalVotes = pollToGet.TotalVotes,
+            AllPollOptions = optionDtos,
+            CreatedAt = pollToGet.CreatedAt,
+            ClosesAt = pollToGet.ClosesAt,
+        };
+        return Ok(pollDto);
     }
 
     #endregion
 
+    #region Create
+
     [HttpPost]
-    public async Task<ActionResult<Poll>> Create(CreatePollRequest request)
+    public async Task<ActionResult<PollDto>> Create(CreatePollDto createPollDto)
     {
         Poll createdPoll = new Poll
         {
-            Title = request.Title,
-            TotalVotes = 0,
-            CreatedAt = DateTime.UtcNow
+            Title = createPollDto.Title,
+            CreatedAt = DateTime.UtcNow,
         };
-        await _context.Polls.AddAsync(createdPoll);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetById), new { id = createdPoll.Id }, createdPoll);
+
+        await _pollRepository.CreateAsync(createdPoll);
+
+        PollDto createdPollDto = new PollDto
+        {
+            Id = createdPoll.Id,
+            Title = createdPoll.Title,
+            TotalVotes = createdPoll.TotalVotes,
+            CreatedAt = createdPoll.CreatedAt,
+            ClosesAt = createdPoll.ClosesAt,
+        };
+
+        return CreatedAtAction(nameof(GetById), new { id = createdPoll.Id }, createdPollDto);
     }
 
     [HttpPost("{id}/options")]
-    public async Task<ActionResult<PollOption>> AddPollOption(int id, CreatePollOptionRequest
-        request)
-
+    public async Task<ActionResult<PollOptionDto>> CreatePollOption(int id, PollOptionDto pollOptionDto)
     {
-        Poll? poll = await _context.Polls.FindAsync(id);
+        Poll? poll = await _pollRepository.GetByIdAsync(id);
         if (poll == null) return NotFound();
 
-        PollOption pollOption = new PollOption
+        PollOptionDto pollOption = new PollOptionDto
         {
-            PollOptionName = request.PollOptionName,
+            PollOptionName = pollOptionDto.PollOptionName,
             PollId = id,
             CreatedAt = DateTime.UtcNow
         };
 
-        _context.PollOptions.Add(pollOption);
-        await _context.SaveChangesAsync();
+        // _context.PollOptions.Add(pollOption);
+        // await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = pollOption.Id }, pollOption);
     }
+
+    #endregion
+
+    #region Update
+
+    // [HttpPut("{id}")]
+    // public async Task<ActionResult<Poll>> UpdatePoll(int id, Poll? pollIn)
+    // {
+    //     Poll? pollToUpdate = await _context.Polls.FindAsync(id);
+    //     if (pollToUpdate == null) return NotFound();
+    //     if (pollIn != null)
+    //     {
+    //         pollToUpdate.Title = pollIn.Title;
+    //         pollToUpdate.TotalVotes = pollIn.TotalVotes;
+    //     }
+    //
+    //     await _context.SaveChangesAsync();
+    //     return NoContent();
+    // }
+
+    #endregion
+
+
+    #region Delete
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(int id)
     {
-        Poll? pollToDelete = await _context.Polls.FindAsync(id);
-        if (pollToDelete == null) return NotFound();
+        if (!await _pollRepository.ExistsAsync(id)) return NotFound();
 
-        _context.Polls.Remove(pollToDelete);
-        await _context.SaveChangesAsync();
+        await _pollRepository.DeleteAsync(id);
         return NoContent();
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult<Poll>> UpdatePoll(int id, Poll? pollIn)
-    {
-        Poll? pollToUpdate = await _context.Polls.FindAsync(id);
-        if (pollToUpdate == null) return NotFound();
-        if (pollIn != null)
-        {
-            pollToUpdate.Title = pollIn.Title;
-            pollToUpdate.TotalVotes = pollIn.TotalVotes;
-        }
-
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
-
-    [HttpGet("{id}/options/votes")]
-    public async Task<ActionResult<List<PollOption>>> GetAllVotesForPollOption(int id)
-    {
-        // List<Vote> allVotesForPollOption = await _context.Polls
-        //     .Where(x => x.Id == id)
-        //     .SelectMany(x => x.AllPollOptions)
-        //     .SelectMany(x => x.AllVotes)
-        //     .ToListAsync();
-        Poll? poll = await _context.Polls
-            .Include(x => x.AllPollOptions)!
-            .ThenInclude(x => x.AllVotes)
-            .FirstOrDefaultAsync(x => x.Id == id);
-
-        if (poll == null) return NotFound();
-
-        List<VoteCountPerOptionResponse> responses = (poll.AllPollOptions ?? new List<PollOption>())
-            .Select(option => new VoteCountPerOptionResponse
-            {
-                PollOptionName = option.PollOptionName,
-                TotalVotes = option.AllVotes?.Count ?? 0
-            })
-            .ToList();
-
-        return Ok(responses);
-    }
-}
-
-public class VoteCountPerOptionResponse
-{
-    public string PollOptionName { get; set; } = string.Empty;
-    public int TotalVotes { get; set; }
-}
-
-public class CreatePollRequest
-{
-    public string Title { get; set; } = string.Empty;
-}
-
-public class CreatePollOptionRequest
-{
-    public string PollOptionName { get; set; } = string.Empty;
+    #endregion
 }

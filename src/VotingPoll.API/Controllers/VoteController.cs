@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using VotingPoll.Infrastructure.Data;
 using VotingPoll.Core.Entities;
 

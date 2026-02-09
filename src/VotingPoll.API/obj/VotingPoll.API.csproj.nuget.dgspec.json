@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\vanle\\Documents\\GitHub\\Website\\TVL-Website-Backend\\src\\VotingPoll.API\\VotingPoll.API.csproj": {}
+    "C:\\Users\\vanle\\Documents\\GitHub\\Website\\TVL-Website-Backend\\src\\votingpoll.api\\VotingPoll.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\vanle\\Documents\\GitHub\\Website\\TVL-Website-Backend\\src\\VotingPoll.API\\VotingPoll.API.csproj": {
+    "C:\\Users\\vanle\\Documents\\GitHub\\Website\\TVL-Website-Backend\\src\\votingpoll.api\\VotingPoll.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\vanle\\Documents\\GitHub\\Website\\TVL-Website-Backend\\src\\VotingPoll.API\\VotingPoll.API.csproj",
+        "projectUniqueName": "C:\\Users\\vanle\\Documents\\GitHub\\Website\\TVL-Website-Backend\\src\\votingpoll.api\\VotingPoll.API.csproj",
         "projectName": "VotingPoll.API",
-        "projectPath": "C:\\Users\\vanle\\Documents\\GitHub\\Website\\TVL-Website-Backend\\src\\VotingPoll.API\\VotingPoll.API.csproj",
+        "projectPath": "C:\\Users\\vanle\\Documents\\GitHub\\Website\\TVL-Website-Backend\\src\\votingpoll.api\\VotingPoll.API.csproj",
         "packagesPath": "C:\\Users\\vanle\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\vanle\\Documents\\GitHub\\Website\\TVL-Website-Backend\\src\\VotingPoll.API\\obj\\",
+        "outputPath": "C:\\Users\\vanle\\Documents\\GitHub\\Website\\TVL-Website-Backend\\src\\votingpoll.api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\vanle\\AppData\\Roaming\\NuGet\\NuGet.Config"
