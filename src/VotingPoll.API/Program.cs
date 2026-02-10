@@ -17,6 +17,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IPollRepository, PollRepository>();
 builder.Services.AddScoped<IPollOptionRepository, PollOptionRepository>();
+builder.Services.AddScoped<IVoteRepository, VoteRepository>();
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDbContext>(options =>

@@ -18,14 +18,19 @@ public class PollOptionsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<PollOptionDto>>> GetAllOptionsForPoll(int id)
     {
-        List<PollOption> pollOptions = await _pollOptionRepository.GetAllAsync(id);
-        List<PollOptionDto> pollOptionDtos = pollOptions.Select(x => new PollOptionDto
-        {
-            Id = x.Id,
-            PollId = x.PollId,
-            CreatedAt = x.CreatedAt,
-            PollOptionName = x.PollOptionName
-        }).ToList();
+        List<PollOption?> pollOptions = await _pollOptionRepository.GetAllAsync(id);
+        List<PollOptionDto?> pollOptionDtos = pollOptions.Select(x =>
+            {
+                if (x == null) return null;
+                return new PollOptionDto
+                {
+                    Id = x.Id,
+                    PollId = x.PollId,
+                    CreatedAt = x.CreatedAt,
+                    PollOptionName = x.PollOptionName
+                };
+            }
+        ).ToList();
 
         return Ok(pollOptionDtos);
     }
@@ -33,7 +38,7 @@ public class PollOptionsController : ControllerBase
     [HttpGet("{pollOptionId}")]
     public async Task<ActionResult<PollOptionDto>> GetPollOption(int id, int pollOptionId)
     {
-        PollOption pollOption = await _pollOptionRepository.GetAsync(pollOptionId);
+        PollOption? pollOption = await _pollOptionRepository.GetAsync(pollOptionId);
         if (pollOption == null)
             return NotFound();
         if (pollOption.PollId != id)
@@ -48,4 +53,17 @@ public class PollOptionsController : ControllerBase
         };
         return Ok(pollOptionDto);
     }
+
+    #region Delete
+
+    [HttpDelete("{pollOptionId}")]
+    public async Task<ActionResult> DeletePollOption(int id, int pollOptionId)
+    {
+        if (!await _pollOptionRepository.ExistsAsync(pollOptionId))
+            return NotFound();
+        await _pollOptionRepository.DeleteAsync(pollOptionId);
+        return NoContent();
+    }
+
+    #endregion
 }

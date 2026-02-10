@@ -41,7 +41,7 @@ public class PollsController : ControllerBase
     {
         Poll? pollToGet = await _pollRepository.GetByIdAsync(id);
         if (pollToGet == null) return NotFound();
-        List<PollOptionDto>? optionDtos = pollToGet.AllPollOptions.Select(options =>
+        List<PollOptionDto>? optionDtos = pollToGet.AllPollOptions!.Select(options =>
             new PollOptionDto
             {
                 Id = options.Id,

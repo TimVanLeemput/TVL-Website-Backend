@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using VotingPoll.Core.Exceptions;
 
 namespace VotingPoll.API.Middleware;
 
@@ -20,6 +21,33 @@ public class GlobalExceptionMiddleware
         {
             _logger.LogInformation("Maintenance Mode is not Active - Entering Global Exception Middleware");
             await _next(context); // waits for the whole pipeline to complete
+        }
+        catch (PollNotFoundException ex)
+        {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                error = ex.Message,
+                pollId = ex.PollId
+            });
+        }
+        catch (PollClosedException ex)
+        {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                error = ex.Message,
+                pollId = ex.PollId
+            });
+        }
+        catch (AlreadyVotedException ex)
+        {
+            context.Response.StatusCode = 409;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                error = ex.Message,
+                userId = ex.UserId,
+            });
         }
         catch (Exception ex)
         {

@@ -8,3 +8,9 @@ public class VoteDto
     public DateTime VotedAt { get; set; }
     public int PollId { get; set; }
 }
+
+public class CreateVoteDto
+{
+    public string UserId { get; set; } = "Tim";
+    public int PollOptionId { get; set; }
+}

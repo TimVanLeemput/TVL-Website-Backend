@@ -13,30 +13,29 @@ public class PollOptionRepository : IPollOptionRepository
         _context = context;
     }
 
-    public async Task<List<PollOption>> GetAllAsync(int pollId)
+    public async Task<List<PollOption?>> GetAllAsync(int pollId)
     {
         return await _context.PollOptions.AsNoTracking().Where(x => x.PollId == pollId).ToListAsync();
     }
 
-    public async Task<PollOption> GetAsync(int id)
+    public async Task<PollOption?> GetAsync(int id)
     {
         PollOption pollOption = await _context.PollOptions.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         return pollOption;
     }
 
-    public Task<PollOption> SaveAsync(PollOption pollOption)
+    public async Task<bool> ExistsAsync(int pollId)
     {
-        throw new NotImplementedException();
+        return await _context.Polls.AnyAsync(p => p.Id == pollId);
     }
 
-    public Task<PollOption> UpdateAsync(int id, PollOption pollOption)
+    public async Task DeleteAsync(int id)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<PollOption> DeleteAsync(int id)
-    {
-        throw new NotImplementedException();
+        PollOption pollOption = await _context.PollOptions.FindAsync(id);
+        if (pollOption == null)
+            throw new Exception("PollOption not found");
+        _context.PollOptions.Remove(pollOption);
+        await _context.SaveChangesAsync();
     }
 
     public async Task<bool> Exists(int pollId)
