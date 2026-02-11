@@ -24,11 +24,11 @@ namespace VotingPoll.API.Migrations
 
             modelBuilder.Entity("PollOption", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("PollId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PollId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -43,7 +43,7 @@ namespace VotingPoll.API.Migrations
                     b.Property<int?>("TotalVotes")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("PollId");
 
                     b.HasIndex("PollId");
 
@@ -78,11 +78,11 @@ namespace VotingPoll.API.Migrations
 
             modelBuilder.Entity("VotingPoll.Core.Entities.Poll", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("PollId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PollId"));
 
                     b.Property<DateTime?>("ClosesAt")
                         .HasColumnType("datetime2");
@@ -96,7 +96,7 @@ namespace VotingPoll.API.Migrations
                     b.Property<int>("TotalVotes")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("PollId");
 
                     b.ToTable("Polls");
 
@@ -112,11 +112,11 @@ namespace VotingPoll.API.Migrations
 
             modelBuilder.Entity("VotingPoll.Core.Entities.Vote", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("PollId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PollId"));
 
                     b.Property<int>("PollId")
                         .HasColumnType("int");
@@ -130,7 +130,7 @@ namespace VotingPoll.API.Migrations
                     b.Property<DateTime>("VotedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.HasKey("PollId");
 
                     b.HasIndex("PollOptionId");
 

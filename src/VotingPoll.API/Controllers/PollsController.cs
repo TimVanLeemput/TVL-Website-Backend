@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using VotingPoll.Core.DTOs;
 using VotingPoll.Core.Entities;
+using VotingPoll.Core.Mappings;
 using VotingPoll.Infrastructure.Repositories;
+using VotingPoll.Infrastructure.Validation;
+using ValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace VotingPoll.API.Controllers;
 
@@ -11,12 +15,14 @@ public class PollsController : ControllerBase
 {
     IPollRepository _pollRepository;
     IPollOptionRepository _pollOptionRepository;
+    CreatePollDtoValidator _createPollDtoValidator;
 
     public PollsController(IPollRepository pollRepository,
-        IPollOptionRepository pollOptionRepository)
+        IPollOptionRepository pollOptionRepository, CreatePollDtoValidator createPollDtoValidator)
     {
         _pollRepository = pollRepository;
         _pollOptionRepository = pollOptionRepository;
+        _createPollDtoValidator = createPollDtoValidator;
     }
 
     #region GET
@@ -27,7 +33,7 @@ public class PollsController : ControllerBase
         List<Poll> polls = await _pollRepository.GetAllAsync();
         List<PollDto> pollDtos = polls.Select(poll => new PollDto
         {
-            Id = poll.Id,
+            PollId = poll.Id,
             Title = poll.Title,
             TotalVotes = poll.TotalVotes,
             CreatedAt = poll.CreatedAt,
@@ -41,26 +47,43 @@ public class PollsController : ControllerBase
     {
         Poll? pollToGet = await _pollRepository.GetByIdAsync(id);
         if (pollToGet == null) return NotFound();
-        List<PollOptionDto>? optionDtos = pollToGet.AllPollOptions!.Select(options =>
-            new PollOptionDto
-            {
-                Id = options.Id,
-                PollOptionName = options.PollOptionName,
-                PollId = options.PollId,
-                TotalVotes = options.TotalVotes,
-                CreatedAt = options.CreatedAt
-            }).ToList();
-
-        PollDto pollDto = new PollDto
-        {
-            Id = pollToGet.Id,
-            Title = pollToGet.Title,
-            TotalVotes = pollToGet.TotalVotes,
-            AllPollOptions = optionDtos,
-            CreatedAt = pollToGet.CreatedAt,
-            ClosesAt = pollToGet.ClosesAt,
-        };
+        PollDto pollDto = pollToGet.ToDto();
+        // List<PollOptionDto>? optionDtos = pollToGet.AllPollOptions!.Select(options =>
+        //     new PollOptionDto
+        //     {
+        //         PollId = options.PollId,
+        //         PollOptionName = options.PollOptionName,
+        //         PollId = options.PollId,
+        //         TotalVotes = options.TotalVotes,
+        //         CreatedAt = options.CreatedAt
+        //     }).ToList();
+        //
+        // PollDto pollDtosses = new PollDto
+        // {
+        //     PollId = pollToGet.PollId,
+        //     Title = pollToGet.Title,
+        //     TotalVotes = pollToGet.TotalVotes,
+        //     AllPollOptions = optionDtos,
+        //     CreatedAt = pollToGet.CreatedAt,
+        //     ClosesAt = pollToGet.ClosesAt,
+        // };
         return Ok(pollDto);
+    }
+
+    [HttpGet("{id}/creationDate")]
+    public async Task<ActionResult<PollCreationDateDto>> GetPollCreationDateById(int id)
+    {
+        Poll? pollToGet = await _pollRepository.GetByIdAsync(id);
+        if (pollToGet == null) return NotFound();
+
+
+        PollCreationDateDto pollCreationDateDto = new PollCreationDateDto
+        {
+            PollId = pollToGet.Id,
+            Title = pollToGet.Title,
+            CreatedAt = pollToGet.CreatedAt
+        };
+        return Ok(pollCreationDateDto);
     }
 
     #endregion
@@ -68,24 +91,17 @@ public class PollsController : ControllerBase
     #region Create
 
     [HttpPost]
-    public async Task<ActionResult<PollDto>> Create(CreatePollDto createPollDto)
+    public async Task<ActionResult<PollDto>> Create(CreatePollDto
+        createPollDto)
     {
-        Poll createdPoll = new Poll
-        {
-            Title = createPollDto.Title,
-            CreatedAt = DateTime.UtcNow,
-        };
+        ValidationResult validationResult = await _createPollDtoValidator.ValidateAsync(createPollDto);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult);
+
+        Poll createdPoll = createPollDto.ToEntity();
 
         await _pollRepository.CreateAsync(createdPoll);
-
-        PollDto createdPollDto = new PollDto
-        {
-            Id = createdPoll.Id,
-            Title = createdPoll.Title,
-            TotalVotes = createdPoll.TotalVotes,
-            CreatedAt = createdPoll.CreatedAt,
-            ClosesAt = createdPoll.ClosesAt,
-        };
+        PollDto createdPollDto = createdPoll.ToDto();
 
         return CreatedAtAction(nameof(GetById), new { id = createdPoll.Id }, createdPollDto);
     }

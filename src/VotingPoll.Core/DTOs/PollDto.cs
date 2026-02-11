@@ -1,20 +1,36 @@
-﻿namespace VotingPoll.Core.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace VotingPoll.Core.DTOs;
+
+#region Dto Response
 
 public class PollDto
 {
-    public int Id { get; set; }
+    public int PollId { get; set; }
+
     public string? Title { get; set; } = string.Empty;
+
     public int TotalVotes { get; set; } = 0;
     public List<PollOptionDto>? AllPollOptions { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? ClosesAt { get; set; }
 }
-#region Dto Request
 
-public class  CreatePollDto
+public class PollCreationDateDto
 {
-    public string Title { get; set; } = string.Empty;
+    public int PollId { get; set; }
+    public string? Title { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
 }
 
+#endregion
+
+#region Dto Request
+
+public class CreatePollDto
+{
+    public string Title { get; set; } = string.Empty;
+    public List<CreatePollOptionDto>? AllPollOptions { get; set; }
+}
 
 #endregion

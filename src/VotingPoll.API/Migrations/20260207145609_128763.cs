@@ -19,7 +19,7 @@ namespace VotingPoll.API.Migrations
                 table: "Votes",
                 column: "PollOptionId",
                 principalTable: "PollOptions",
-                principalColumn: "Id",
+                principalColumn: "PollId",
                 onDelete: ReferentialAction.Cascade);
         }
 
@@ -35,7 +35,7 @@ namespace VotingPoll.API.Migrations
                 table: "Votes",
                 column: "PollOptionId",
                 principalTable: "PollOptions",
-                principalColumn: "Id");
+                principalColumn: "PollId");
         }
     }
 }

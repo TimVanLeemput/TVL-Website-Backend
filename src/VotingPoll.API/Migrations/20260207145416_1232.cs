@@ -48,7 +48,7 @@ namespace VotingPoll.API.Migrations
                         name: "FK_PollOptions_Polls_PollId",
                         column: x => x.PollId,
                         principalTable: "Polls",
-                        principalColumn: "Id",
+                        principalColumn: "PollId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -70,22 +70,22 @@ namespace VotingPoll.API.Migrations
                         name: "FK_Votes_PollOptions_PollOptionId",
                         column: x => x.PollOptionId,
                         principalTable: "PollOptions",
-                        principalColumn: "Id");
+                        principalColumn: "PollId");
                     table.ForeignKey(
                         name: "FK_Votes_Polls_PollId",
                         column: x => x.PollId,
                         principalTable: "Polls",
-                        principalColumn: "Id");
+                        principalColumn: "PollId");
                 });
 
             migrationBuilder.InsertData(
                 table: "Polls",
-                columns: new[] { "Id", "ClosesAt", "CreatedAt", "Title", "TotalVotes" },
+                columns: new[] { "PollId", "ClosesAt", "CreatedAt", "Title", "TotalVotes" },
                 values: new object[] { 1, null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "What's your favorite color?", 0 });
 
             migrationBuilder.InsertData(
                 table: "PollOptions",
-                columns: new[] { "Id", "ClosesAt", "CreatedAt", "PollId", "PollOptionName", "TotalVotes" },
+                columns: new[] { "PollId", "ClosesAt", "CreatedAt", "PollId", "PollOptionName", "TotalVotes" },
                 values: new object[,]
                 {
                     { 1, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "Blue", 0 },

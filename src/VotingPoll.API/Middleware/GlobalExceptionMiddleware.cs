@@ -24,7 +24,7 @@ public class GlobalExceptionMiddleware
         }
         catch (PollNotFoundException ex)
         {
-            context.Response.StatusCode = 400;
+            context.Response.StatusCode = 404;
             await context.Response.WriteAsJsonAsync(new
             {
                 error = ex.Message,

@@ -5,6 +5,7 @@ using VotingPoll.Infrastructure.Data;
 using VotingPoll.Core.Entities;
 using VotingPoll.Core.Exceptions;
 using VotingPoll.Infrastructure.Repositories;
+using VotingPoll.Infrastructure.Validation;
 
 namespace VotingPoll.API.Controllers;
 
@@ -14,13 +15,16 @@ public class VoteController : ControllerBase
 {
     private readonly IVoteRepository _voteRepository;
     private readonly IPollRepository _pollRepository;
+    private readonly CreateVoteRequestValidator _createVoteRequestValidator;
     private readonly ILogger<VoteController> _logger;
 
     public VoteController(IVoteRepository voteRepository, IPollRepository pollRepository,
+        CreateVoteRequestValidator createVoteRequestValidator,
         ILogger<VoteController> logger)
     {
         _pollRepository = pollRepository;
         _voteRepository = voteRepository;
+        _createVoteRequestValidator = createVoteRequestValidator;
         _logger = logger;
     }
 
@@ -70,7 +74,7 @@ public class VoteController : ControllerBase
         Poll? poll = await _pollRepository.GetByIdAsync(pollId);
         if (poll == null)
             throw new PollNotFoundException(pollId);
-            // return NotFound("Poll not found");
+        // return NotFound("Poll not found");
 
         if (poll.ClosesAt < DateTime.UtcNow)
             throw new PollClosedException(pollId);
@@ -79,6 +83,8 @@ public class VoteController : ControllerBase
         if (userAlreadyVoted)
             throw new AlreadyVotedException(createVoteDto.UserId);
 
+        await _createVoteRequestValidator.ValidateAsync(createVoteDto);
+        _logger.LogInformation($"Created vote for poll with id {pollId}");
         Vote createdVote = new Vote
         {
             UserId = createVoteDto.UserId,

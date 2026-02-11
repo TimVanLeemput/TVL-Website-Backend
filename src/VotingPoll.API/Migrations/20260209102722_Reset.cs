@@ -27,21 +27,21 @@ namespace VotingPoll.API.Migrations
 
             migrationBuilder.UpdateData(
                 table: "PollOptions",
-                keyColumn: "Id",
+                keyColumn: "PollId",
                 keyValue: 1,
                 column: "ClosesAt",
                 value: null);
 
             migrationBuilder.UpdateData(
                 table: "PollOptions",
-                keyColumn: "Id",
+                keyColumn: "PollId",
                 keyValue: 2,
                 column: "ClosesAt",
                 value: null);
 
             migrationBuilder.UpdateData(
                 table: "PollOptions",
-                keyColumn: "Id",
+                keyColumn: "PollId",
                 keyValue: 3,
                 column: "ClosesAt",
                 value: null);

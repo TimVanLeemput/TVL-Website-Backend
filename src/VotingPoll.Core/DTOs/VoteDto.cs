@@ -11,6 +11,6 @@ public class VoteDto
 
 public class CreateVoteDto
 {
-    public string UserId { get; set; } = "Tim";
+    public string UserId { get; set; } = string.Empty;
     public int PollOptionId { get; set; }
 }

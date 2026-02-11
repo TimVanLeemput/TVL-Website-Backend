@@ -8,10 +8,13 @@
 
 // --------------------------------------------------------APP CONTAINER / SETUP--------------------------------------
 
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using VotingPoll.API.Middleware;
+using VotingPoll.Core.Entities;
 using VotingPoll.Infrastructure.Data;
 using VotingPoll.Infrastructure.Repositories;
+using VotingPoll.Infrastructure.Validation;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +22,8 @@ builder.Services.AddScoped<IPollRepository, PollRepository>();
 builder.Services.AddScoped<IPollOptionRepository, PollOptionRepository>();
 builder.Services.AddScoped<IVoteRepository, VoteRepository>();
 builder.Services.AddControllers();
+// builder.Services.AddScoped<IValidator<Poll>, CreatePollDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreatePollDtoValidator>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration
