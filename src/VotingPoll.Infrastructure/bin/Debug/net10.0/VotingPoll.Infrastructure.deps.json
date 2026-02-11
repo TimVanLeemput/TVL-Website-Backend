@@ -969,6 +969,7 @@
       },
       "VotingPoll.Core/1.0.0": {
         "dependencies": {
+          "FluentValidation": "12.1.1",
           "Microsoft.AspNetCore.JsonPatch": "10.0.2",
           "Microsoft.AspNetCore.Mvc": "2.3.9",
           "Microsoft.EntityFrameworkCore": "10.0.2",

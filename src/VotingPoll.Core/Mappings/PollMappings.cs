@@ -39,6 +39,18 @@ public static class PollMappings
         };
         return pollOption;
     }
+    
+    public static VoteConfirmationDto ToVoteConfirmationDto(this Poll poll,
+        PollOption pollOption)
+    {
+        VoteConfirmationDto voteConfirmationDto = new VoteConfirmationDto
+        {
+            PollTitle = poll.Title,
+            PollOptionName = pollOption.PollOptionName,
+            VotedAt = DateTime.UtcNow
+        };
+        return voteConfirmationDto;
+    }
 
     public static void ApplyTo(this UpdatePollDto dto, Poll poll)
     {

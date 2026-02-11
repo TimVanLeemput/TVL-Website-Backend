@@ -5,25 +5,44 @@
 //3. Configure pipeline    (app.Use..., app.Map...)
 //4. Run                   (app.Run())
 
-
-// --------------------------------------------------------APP CONTAINER / SETUP--------------------------------------
-
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using VotingPoll.API.Middleware;
-using VotingPoll.Core.Entities;
+using VotingPoll.Core.Interfaces.ServicesInterfaces;
+using VotingPoll.Core.Services;
 using VotingPoll.Infrastructure.Data;
 using VotingPoll.Infrastructure.Repositories;
 using VotingPoll.Infrastructure.Validation;
 
+// --------------------------------------------------------APP CONTAINER / SETUP--------------------------------------
+
+#region App container
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+
+#region Repositories
 
 builder.Services.AddScoped<IPollRepository, PollRepository>();
 builder.Services.AddScoped<IPollOptionRepository, PollOptionRepository>();
 builder.Services.AddScoped<IVoteRepository, VoteRepository>();
-builder.Services.AddControllers();
-// builder.Services.AddScoped<IValidator<Poll>, CreatePollDtoValidator>();
+
+#endregion
+
+#region Custom Services
+
+builder.Services.AddScoped<IVotingService, VotingService>();
+
+#endregion
+
+#region Validators
+
 builder.Services.AddValidatorsFromAssemblyContaining<CreatePollDtoValidator>();
+
+#endregion
+
+#region Database Connection
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration
@@ -31,16 +50,21 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         b => b.MigrationsAssembly("VotingPoll.API"))
 );
 
+#endregion
+
+#endregion
+
 WebApplication app = builder.Build();
 // ----------------------------------------------CONTAINER IS SEALED AFTER THIS POINT-------------------------------
 // -------------------------------------------------APP IS RUNNING AFTER THIS POINT---------------------------------
-// app.UseMiddleware<MaintenanceModeMiddleware>();
+
+#region Middleware
+
 app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.MapControllers();
 
-// app.UseHttpsRedirection();
-
+#endregion
 
 app.Run();
