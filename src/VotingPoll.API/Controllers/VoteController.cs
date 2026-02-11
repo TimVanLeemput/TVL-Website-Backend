@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using VotingPoll.Core.DTOs;
-using VotingPoll.Infrastructure.Data;
 using VotingPoll.Core.Entities;
 using VotingPoll.Core.Exceptions;
+using VotingPoll.Core.Mappings;
 using VotingPoll.Infrastructure.Repositories;
 using VotingPoll.Infrastructure.Validation;
 
@@ -15,15 +15,18 @@ public class VoteController : ControllerBase
 {
     private readonly IVoteRepository _voteRepository;
     private readonly IPollRepository _pollRepository;
+    private readonly IPollOptionRepository _pollOptionRepository;
     private readonly CreateVoteRequestValidator _createVoteRequestValidator;
     private readonly ILogger<VoteController> _logger;
 
     public VoteController(IVoteRepository voteRepository, IPollRepository pollRepository,
+        IPollOptionRepository pollOptionRepository,
         CreateVoteRequestValidator createVoteRequestValidator,
         ILogger<VoteController> logger)
     {
         _pollRepository = pollRepository;
         _voteRepository = voteRepository;
+        _pollOptionRepository = pollOptionRepository;
         _createVoteRequestValidator = createVoteRequestValidator;
         _logger = logger;
     }
@@ -83,15 +86,16 @@ public class VoteController : ControllerBase
         if (userAlreadyVoted)
             throw new AlreadyVotedException(createVoteDto.UserId);
 
-        await _createVoteRequestValidator.ValidateAsync(createVoteDto);
+        ValidationResult validationResult = await _createVoteRequestValidator.ValidateAsync(createVoteDto);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult);
+
+        PollOption? option = await _pollOptionRepository.GetAsync(createVoteDto.PollOptionId);
+        if (option == null || option.PollId != pollId)
+            return BadRequest("Poll option does not belong to this poll");
+
+        Vote createdVote = createVoteDto.ToEntity(pollId);
         _logger.LogInformation($"Created vote for poll with id {pollId}");
-        Vote createdVote = new Vote
-        {
-            UserId = createVoteDto.UserId,
-            PollId = pollId, // From route
-            PollOptionId = createVoteDto.PollOptionId, // From body
-            VotedAt = DateTime.UtcNow
-        };
 
         await _voteRepository.CreateAsync(createdVote);
 

@@ -29,6 +29,23 @@ public static class PollMappings
         };
     }
 
+    public static PollOptionDto ToPollOptionDto(this PollOptionDto pollOptionDto)
+    {
+        PollOptionDto pollOption = new PollOptionDto
+        {
+            PollOptionName = pollOptionDto.PollOptionName,
+            PollId = pollOptionDto.PollId,
+            CreatedAt = DateTime.UtcNow
+        };
+        return pollOption;
+    }
+
+    public static void ApplyTo(this UpdatePollDto dto, Poll poll)
+    {
+        poll.Title = dto.Title;
+        poll.ClosesAt = dto.ClosesAt;
+    }
+
     public static Poll ToEntity(this CreatePollDto createPollDto)
     {
         Poll createdPoll = new Poll

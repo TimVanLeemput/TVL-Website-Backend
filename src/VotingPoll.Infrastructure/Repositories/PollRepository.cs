@@ -35,8 +35,12 @@ public class PollRepository : IPollRepository
         await _context.SaveChangesAsync();
         return poll;
     }
-
-
+    
+    public async Task SaveChanges()
+    {
+        await _context.SaveChangesAsync();
+    }
+    
     public async Task DeleteAsync(int id)
     {
         Poll? pollToDelete = await _context.Polls.FindAsync(id);
@@ -51,4 +55,5 @@ public class PollRepository : IPollRepository
     {
         return await _context.Polls.AnyAsync(p => p.Id == id);
     }
+
 }

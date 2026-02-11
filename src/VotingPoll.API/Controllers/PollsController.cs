@@ -16,13 +16,16 @@ public class PollsController : ControllerBase
     IPollRepository _pollRepository;
     IPollOptionRepository _pollOptionRepository;
     CreatePollDtoValidator _createPollDtoValidator;
+    UpdatePollValidator _updatePollValidator;
 
     public PollsController(IPollRepository pollRepository,
-        IPollOptionRepository pollOptionRepository, CreatePollDtoValidator createPollDtoValidator)
+        IPollOptionRepository pollOptionRepository, CreatePollDtoValidator createPollDtoValidator,
+        UpdatePollValidator updatePollValidator)
     {
         _pollRepository = pollRepository;
         _pollOptionRepository = pollOptionRepository;
         _createPollDtoValidator = createPollDtoValidator;
+        _updatePollValidator = updatePollValidator;
     }
 
     #region GET
@@ -111,37 +114,35 @@ public class PollsController : ControllerBase
     {
         Poll? poll = await _pollRepository.GetByIdAsync(id);
         if (poll == null) return NotFound();
+        PollOptionDto pollOption = pollOptionDto.ToPollOptionDto();
 
-        PollOptionDto pollOption = new PollOptionDto
-        {
-            PollOptionName = pollOptionDto.PollOptionName,
-            PollId = id,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        // _context.PollOptions.Add(pollOption);
-        // await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = pollOption.Id }, pollOption);
     }
 
     #endregion
 
-    #region Update
+    #region SaveChanges
 
-    // [HttpPut("{id}")]
-    // public async Task<ActionResult<Poll>> UpdatePoll(int id, Poll? pollIn)
-    // {
-    //     Poll? pollToUpdate = await _context.Polls.FindAsync(id);
-    //     if (pollToUpdate == null) return NotFound();
-    //     if (pollIn != null)
-    //     {
-    //         pollToUpdate.Title = pollIn.Title;
-    //         pollToUpdate.TotalVotes = pollIn.TotalVotes;
-    //     }
-    //
-    //     await _context.SaveChangesAsync();
-    //     return NoContent();
-    // }
+    [HttpPut("{id}")]
+    public async Task<ActionResult<Poll>> UpdatePoll(int id, UpdatePollDto? pollIn)
+    {
+        Poll? pollToUpdate = await _pollRepository.GetByIdAsync(id);
+        if (pollToUpdate == null) return NotFound();
+        if (pollIn != null)
+        {
+            ValidationResult validationResult = await _updatePollValidator.ValidateAsync(pollIn);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult);
+        }
+
+        pollIn?.ApplyTo(pollToUpdate);
+
+        if (pollIn?.ClosesAt < DateTime.UtcNow)
+            return BadRequest("ClosesAt must be in the future");
+
+        await _pollRepository.SaveChanges();
+        return Ok(pollToUpdate);
+    }
 
     #endregion
 

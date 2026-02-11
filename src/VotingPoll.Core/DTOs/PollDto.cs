@@ -33,4 +33,10 @@ public class CreatePollDto
     public List<CreatePollOptionDto>? AllPollOptions { get; set; }
 }
 
+public class UpdatePollDto
+{
+    public string Title { get; set; }
+    public DateTime ClosesAt { get; set; }
+}
+
 #endregion
