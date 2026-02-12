@@ -25,6 +25,24 @@ public class VotingService : IVotingService
         _pollOptionRepository = pollOptionRepository;
     }
 
+    public async Task<VoteDto> GetById(int id)
+    {
+        Vote? voteToGet = await _voteRepository.GetAsync(id);
+        if (voteToGet == null)
+            throw new VoteNotFoundException(id);
+
+        VoteDto voteDto = new VoteDto
+        {
+            Id = voteToGet.Id,
+            PollOptionId = voteToGet.PollOptionId,
+            UserId = voteToGet.UserId,
+            VotedAt = voteToGet.VotedAt,
+            PollId = voteToGet.PollId,
+        };
+
+        return voteDto;
+    }
+
     public async Task<VoteConfirmationDto> Create(int pollId, CreateVoteDto createVoteDto)
     {
         Poll? poll = await _pollRepository.GetByIdAsync(pollId);

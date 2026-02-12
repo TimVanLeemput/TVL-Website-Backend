@@ -51,14 +51,7 @@ public class VoteController : ControllerBase
         Vote? voteToGet = await _voteRepository.GetAsync(id);
         if (voteToGet == null) return NotFound();
 
-        VoteDto voteDto = new VoteDto
-        {
-            Id = voteToGet.Id,
-            PollOptionId = voteToGet.PollOptionId,
-            UserId = voteToGet.UserId,
-            VotedAt = voteToGet.VotedAt,
-            PollId = voteToGet.PollId,
-        };
+        VoteDto voteDto = await _votingService.GetById(id);
 
         return Ok(voteDto);
     }

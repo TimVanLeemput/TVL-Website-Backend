@@ -19,7 +19,6 @@ public class GlobalExceptionMiddleware
     {
         try
         {
-            _logger.LogInformation("Maintenance Mode is not Active - Entering Global Exception Middleware");
             await _next(context); // waits for the whole pipeline to complete
         }
         catch (PollNotFoundException ex)
@@ -51,18 +50,19 @@ public class GlobalExceptionMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception - TVL");
+            _logger.LogError(ex, "Unhandled exception");
 
-            context.Response.StatusCode = 500;
-            context.Response.ContentType = "application/json";
+            // context.Response.StatusCode = 500;
+            // context.Response.ContentType = "application/json";
 
-            ErrorResponse error = new ErrorResponse
-            {
-                Message = "An unexpected error occurred - TVL",
-                TraceId = context.TraceIdentifier
-            };
+            // ErrorResponse error = new ErrorResponse
+            // {
+            //     Message = "An unexpected error occurred - TVL",
+            //     TraceId = context.TraceIdentifier
+            // };
+            await ExceptionWriter.WriteErrorResponse(context, 500, "Unhandled exception - Please contact the developer.");
 
-            await context.Response.WriteAsJsonAsync(error);
+            // await context.Response.WriteAsJsonAsync(error);
         }
     }
 }
