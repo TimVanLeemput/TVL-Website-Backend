@@ -8,6 +8,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using VotingPoll.API.Middleware;
+using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
 using VotingPoll.Core.Services;
 using VotingPoll.Infrastructure.Data;
@@ -21,6 +22,7 @@ using VotingPoll.Infrastructure.Validation;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 
 #region Repositories
 
@@ -33,6 +35,8 @@ builder.Services.AddScoped<IVoteRepository, VoteRepository>();
 #region Custom Services
 
 builder.Services.AddScoped<IVotingService, VotingService>();
+builder.Services.AddScoped<IPollService, PollService>();
+builder.Services.AddScoped<IPollOptionService, PollOptionService>();
 
 #endregion
 

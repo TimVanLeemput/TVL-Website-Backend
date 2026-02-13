@@ -1,11 +1,11 @@
-﻿using VotingPoll.Core.Entities;
-
-namespace VotingPoll.Infrastructure.Repositories;
+﻿namespace VotingPoll.Core.Interfaces.Repositories;
 
 public interface IPollOptionRepository
 {
-    Task<List<PollOption?>> GetAllAsync(int pollId);
-    Task<PollOption?> GetAsync(int id);
+    Task<List<PollOption?>> GetAllAsync();
+    Task<List<PollOption?>> GetAllPollOptionsForPollAsync(int pollId);
+    Task<PollOption?> GetAsync(int pollId, int pollOptionId);
+    Task<PollOption> CreateAsync(PollOption pollOption);
     Task<bool> ExistsAsync(int pollId);
-    Task DeleteAsync(int id);
+    Task DeleteAsync(int pollId, int pollOptionId);
 }

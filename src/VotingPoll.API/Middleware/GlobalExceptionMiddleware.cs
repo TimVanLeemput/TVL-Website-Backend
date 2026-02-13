@@ -30,6 +30,36 @@ public class GlobalExceptionMiddleware
                 pollId = ex.PollId
             });
         }
+        catch (InvalidPollOptionException ex)
+        {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsJsonAsync(new
+                {
+                    error = ex.Message,
+                    pollId = ex.Message
+                }
+            );
+        }
+        catch (PollOptionNotFoundException ex)
+        {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsJsonAsync(new
+                {
+                    error = ex.Message,
+                    pollOptionId = ex.PollOptionId
+                }
+            );
+        }
+        catch (ListOfPollOptionsNotFoundException ex)
+        {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsJsonAsync(new
+                {
+                    error = ex.Message,
+                    pollId = ex.PollId
+                }
+            );
+        }
         catch (PollClosedException ex)
         {
             context.Response.StatusCode = 400;
@@ -48,6 +78,16 @@ public class GlobalExceptionMiddleware
                 userId = ex.UserId,
             });
         }
+        catch (VoteNotFoundException ex)
+        {
+            context.Response.StatusCode = 404;
+            await context.Response.WriteAsJsonAsync(new
+                {
+                    error = ex.Message,
+                    voteId = ex.VoteId
+                }
+            );
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception");
@@ -60,15 +100,10 @@ public class GlobalExceptionMiddleware
             //     Message = "An unexpected error occurred - TVL",
             //     TraceId = context.TraceIdentifier
             // };
-            await ExceptionWriter.WriteErrorResponse(context, 500, "Unhandled exception - Please contact the developer.");
+            await ExceptionWriter.WriteErrorResponse(context, 500,
+                "Unhandled exception - Please contact the developer.");
 
             // await context.Response.WriteAsJsonAsync(error);
         }
     }
-}
-
-public class ErrorResponse
-{
-    public string Message { get; set; } = string.Empty;
-    public string TraceId { get; set; } = string.Empty;
 }

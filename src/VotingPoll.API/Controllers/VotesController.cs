@@ -10,37 +10,23 @@ namespace VotingPoll.API.Controllers;
 
 [ApiController]
 [Route("api/polls/{pollId}/vote")]
-public class VoteController : ControllerBase
+public class VotesController : ControllerBase
 {
     private readonly IVotingService _votingService;
 
-    private readonly IVoteRepository _voteRepository;
     private readonly CreateVoteRequestValidator _createVoteRequestValidator;
 
-    public VoteController(IVotingService votingService, IVoteRepository voteRepository,
+    public VotesController(IVotingService votingService,
         CreateVoteRequestValidator createVoteRequestValidator)
     {
         _votingService = votingService;
-        _voteRepository = voteRepository;
         _createVoteRequestValidator = createVoteRequestValidator;
     }
 
     [HttpGet]
     public async Task<ActionResult<List<VoteDto>>> GetAllVotesForPoll(int pollId)
     {
-        // List<Vote> votes = await _context.Votes
-        //     .Where(v => v.PollId == pollId)
-        //     .ToListAsync();
-        List<Vote?> votes = await _voteRepository.GetAllAsync(pollId);
-
-        List<VoteDto> votesDto = votes.Select(vote => new VoteDto
-        {
-            Id = vote.Id,
-            PollOptionId = vote.PollOptionId,
-            UserId = vote.UserId,
-            PollId = vote.PollId,
-            VotedAt = vote.VotedAt
-        }).ToList();
+        List<VoteDto> votesDto = await _votingService.GetAllVotesForPoll(pollId);
 
         return Ok(votesDto);
     }
@@ -48,9 +34,6 @@ public class VoteController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<VoteDto>?> GetById(int id)
     {
-        Vote? voteToGet = await _voteRepository.GetAsync(id);
-        if (voteToGet == null) return NotFound();
-
         VoteDto voteDto = await _votingService.GetById(id);
 
         return Ok(voteDto);

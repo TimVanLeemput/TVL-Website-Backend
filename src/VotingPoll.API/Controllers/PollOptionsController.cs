@@ -1,68 +1,67 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VotingPoll.Core.DTOs;
-using VotingPoll.Infrastructure.Repositories;
+using VotingPoll.Core.Interfaces.ServicesInterfaces;
+using VotingPoll.Infrastructure.Validation;
 
 namespace VotingPoll.API.Controllers;
 
 [ApiController]
-[Route("api/polls/{id}/options")]
+[Route("api/polls/{pollId}/options")]
 public class PollOptionsController : ControllerBase
 {
-    private readonly IPollOptionRepository _pollOptionRepository;
+    private readonly IPollService _pollService;
+    private readonly IPollOptionService _pollOptionService;
 
-    public PollOptionsController(IPollOptionRepository pollOptionRepository)
+    private readonly CreatePollOptionDtoValidator _createPollOptionDtoValidator;
+
+    public PollOptionsController(IPollOptionService pollOptionService,
+        IPollService pollService, CreatePollOptionDtoValidator createPollOptionDtoValidator)
     {
-        _pollOptionRepository = pollOptionRepository;
+        _pollOptionService = pollOptionService;
+        _pollService = pollService;
+        _createPollOptionDtoValidator = createPollOptionDtoValidator;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<PollOptionDto>>> GetAllOptionsForPoll(int id)
-    {
-        List<PollOption?> pollOptions = await _pollOptionRepository.GetAllAsync(id);
-        List<PollOptionDto?> pollOptionDtos = pollOptions.Select(x =>
-            {
-                if (x == null) return null;
-                return new PollOptionDto
-                {
-                    Id = x.Id,
-                    PollId = x.PollId,
-                    CreatedAt = x.CreatedAt,
-                    PollOptionName = x.PollOptionName
-                };
-            }
-        ).ToList();
+    #region GET
 
-        return Ok(pollOptionDtos);
+    [HttpGet]
+    public async Task<ActionResult<List<PollOptionDto>>> GetAllOptionsForPoll(int pollId)
+    {
+        List<PollOptionDto> pollOptionsDto = await _pollOptionService.GetAllPollOptionsForPoll(pollId);
+
+        return Ok(pollOptionsDto);
     }
 
     [HttpGet("{pollOptionId}")]
-    public async Task<ActionResult<PollOptionDto>> GetPollOption(int id, int pollOptionId)
+    public async Task<ActionResult<PollOptionDto>> GetPollOption(int pollId, int pollOptionId)
     {
-        PollOption? pollOption = await _pollOptionRepository.GetAsync(pollOptionId);
-        if (pollOption == null)
-            return NotFound();
-        if (pollOption.PollId != id)
-            return NotFound();
-        PollOptionDto pollOptionDto = new PollOptionDto
-        {
-            Id = pollOption.Id,
-            PollOptionName = pollOption.PollOptionName,
-            PollId = pollOption.PollId,
-            TotalVotes = pollOption.TotalVotes,
-            CreatedAt = pollOption.CreatedAt,
-        };
+        PollOptionDto pollOptionDto = await _pollOptionService.GetById(pollId, pollOptionId);
         return Ok(pollOptionDto);
     }
+
+    #endregion
+
+    #region POST
+
+    [HttpPost]
+    public async Task<ActionResult<PollOptionDto>> CreatePollOption(int pollId, CreatePollOptionDto createPollOptionDto)
+    {
+        await _createPollOptionDtoValidator.ValidateAsync(createPollOptionDto);
+
+        PollOptionDto pollOption = await _pollService.CreatePollOption(pollId, createPollOptionDto);
+
+        return CreatedAtAction(nameof(GetPollOption), new { id = pollOption.Id }, pollOption);
+    }
+
+    #endregion
 
     #region Delete
 
     [HttpDelete("{pollOptionId}")]
-    public async Task<ActionResult> DeletePollOption(int id, int pollOptionId)
+    public async Task<ActionResult> DeletePollOption(int pollId, int pollOptionId)
     {
-        if (!await _pollOptionRepository.ExistsAsync(pollOptionId))
-            return NotFound();
-        await _pollOptionRepository.DeleteAsync(pollOptionId);
-        return NoContent();
+        string deletedPollOptionName = await _pollOptionService.DeletePollOption(pollId, pollOptionId);
+        return Ok($"{deletedPollOptionName} successfully deleted");
     }
 
     #endregion

@@ -16,4 +16,30 @@ public static class VoteMapping
         };
         return vote;
     }
+
+    public static VoteDto ToDto(this Vote vote)
+    {
+        VoteDto voteDto = new VoteDto
+        {
+            Id = vote.Id,
+            PollOptionId = vote.PollOptionId,
+            UserId = vote.UserId,
+            VotedAt = vote.VotedAt,
+            PollId = vote.PollId,
+        };
+        return voteDto;
+    }
+
+    public static List<VoteDto> ToListOfVotesDto(this List<Vote> votes)
+    {
+        List<VoteDto> votesDto = votes.Select(vote => new VoteDto
+        {
+            Id = vote.Id,
+            PollOptionId = vote.PollOptionId,
+            UserId = vote.UserId,
+            PollId = vote.PollId,
+            VotedAt = vote.VotedAt
+        }).ToList();
+        return votesDto;
+    }
 }

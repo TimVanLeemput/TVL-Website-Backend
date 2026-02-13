@@ -39,7 +39,18 @@ public static class PollMappings
         };
         return pollOption;
     }
-    
+
+    public static PollCreationDateDto ToPollCreationDateDto(this Poll poll)
+    {
+        PollCreationDateDto pollCreationDateDto = new PollCreationDateDto
+        {
+            PollId = poll.Id,
+            Title = poll.Title,
+            CreatedAt = poll.CreatedAt
+        };
+        return pollCreationDateDto;
+    }
+
     public static VoteConfirmationDto ToVoteConfirmationDto(this Poll poll,
         PollOption pollOption)
     {
@@ -50,6 +61,18 @@ public static class PollMappings
             VotedAt = DateTime.UtcNow
         };
         return voteConfirmationDto;
+    }
+
+    public static List<PollDto> ToListOfPollDtos(this List<Poll> polls)
+    {
+        List<PollDto> listOfPollDtos = polls.Select(poll => new PollDto
+        {
+            Title = poll.Title,
+            TotalVotes = poll.TotalVotes,
+            CreatedAt = poll.CreatedAt,
+            ClosesAt = poll.ClosesAt
+        }).ToList();
+        return listOfPollDtos;
     }
 
     public static void ApplyTo(this UpdatePollDto dto, Poll poll)

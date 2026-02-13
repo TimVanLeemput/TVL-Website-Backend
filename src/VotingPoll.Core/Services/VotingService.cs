@@ -2,6 +2,7 @@
 using VotingPoll.Core.DTOs;
 using VotingPoll.Core.Entities;
 using VotingPoll.Core.Exceptions;
+using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
 using VotingPoll.Core.Mappings;
 using VotingPoll.Infrastructure.Repositories;
@@ -27,20 +28,22 @@ public class VotingService : IVotingService
 
     public async Task<VoteDto> GetById(int id)
     {
-        Vote? voteToGet = await _voteRepository.GetAsync(id);
-        if (voteToGet == null)
+        Vote? vote = await _voteRepository.GetAsync(id);
+        if (vote == null)
             throw new VoteNotFoundException(id);
 
-        VoteDto voteDto = new VoteDto
-        {
-            Id = voteToGet.Id,
-            PollOptionId = voteToGet.PollOptionId,
-            UserId = voteToGet.UserId,
-            VotedAt = voteToGet.VotedAt,
-            PollId = voteToGet.PollId,
-        };
+        VoteDto voteDto = vote.ToDto();
 
         return voteDto;
+    }
+
+    public async Task<List<VoteDto>> GetAllVotesForPoll(int pollId)
+    {
+        List<Vote> votes = await _voteRepository.GetAllAsync(pollId);
+
+        List<VoteDto> votesDto = votes.ToListOfVotesDto();
+
+        return votesDto;
     }
 
     public async Task<VoteConfirmationDto> Create(int pollId, CreateVoteDto createVoteDto)
@@ -56,7 +59,7 @@ public class VotingService : IVotingService
         if (userAlreadyVoted)
             throw new AlreadyVotedException(createVoteDto.UserId);
 
-        PollOption? option = await _pollOptionRepository.GetAsync(createVoteDto.PollOptionId);
+        PollOption? option = await _pollOptionRepository.GetAsync(pollId,createVoteDto.PollOptionId);
         if (option == null)
             throw new InvalidPollOptionException();
         if (option.PollId != pollId)

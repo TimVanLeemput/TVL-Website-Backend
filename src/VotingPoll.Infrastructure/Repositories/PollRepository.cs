@@ -36,7 +36,7 @@ public class PollRepository : IPollRepository
         return poll;
     }
     
-    public async Task SaveChanges()
+    public async Task UpdatePoll()
     {
         await _context.SaveChangesAsync();
     }

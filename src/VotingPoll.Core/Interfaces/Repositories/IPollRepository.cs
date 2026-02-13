@@ -10,5 +10,5 @@ public interface IPollRepository
     Task<Poll> CreateAsync(Poll poll);
     Task DeleteAsync(int id);
     Task<bool> ExistsAsync(int id);
-    Task SaveChanges();
+    Task UpdatePoll();
 }
