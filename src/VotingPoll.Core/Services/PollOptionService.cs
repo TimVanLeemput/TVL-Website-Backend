@@ -5,7 +5,6 @@ using VotingPoll.Core.Exceptions;
 using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
 using VotingPoll.Core.Mappings;
-using VotingPoll.Infrastructure.Repositories;
 
 namespace VotingPoll.Core.Services;
 
@@ -40,7 +39,7 @@ public class PollOptionService : IPollOptionService
     public async Task<List<PollOptionDto>> GetAllPollOptionsForPoll(int pollId)
     {
         List<PollOption?> pollOptions = await _pollOptionRepository.GetAllPollOptionsForPollAsync(pollId);
-        if (pollOptions.Count <= 0 || pollOptions == null)
+        if (pollOptions == null || pollOptions.Count <= 0)
         {
             _logger.LogWarning($"Poll options are empty, checking if poll exists with id = {pollId}");
             if (!await _pollRepository.ExistsAsync(pollId))
@@ -50,6 +49,17 @@ public class PollOptionService : IPollOptionService
 
         List<PollOptionDto> pollOptionsDto = pollOptions.ToPollOptionsDto();
         return pollOptionsDto!;
+    }
+
+    public async Task<PollOptionDto> CreatePollOption(int id, CreatePollOptionDto createPollOptionDto)
+    {
+        await GetPollOrThrow(id);
+
+        PollOption pollOption = createPollOptionDto.ToEntity(id);
+        await _pollOptionRepository.CreateAsync(pollOption);
+        PollOptionDto pollOptionDto = pollOption.ToPollOptionDto(id);
+
+        return pollOptionDto;
     }
 
     public async Task<string> DeletePollOption(int pollId, int pollOptionId)
@@ -65,5 +75,12 @@ public class PollOptionService : IPollOptionService
         string? pollOptionName = pollOptionDto?.PollOptionName; // Expose which pollOption has been delete
         await _pollOptionRepository.DeleteAsync(pollId, pollOptionId);
         return pollOptionName;
+    }
+
+    private async Task<Poll> GetPollOrThrow(int id)
+    {
+        Poll? pollToGet = await _pollRepository.GetByIdAsync(id);
+        if (pollToGet == null) throw new PollNotFoundException(id);
+        return pollToGet;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VotingPoll.Core.Entities;
+using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Infrastructure.Data;
 
 namespace VotingPoll.Infrastructure.Repositories;
@@ -25,8 +26,8 @@ public class PollRepository : IPollRepository
     public async Task<List<Poll>> GetAllAsync()
     {
         return await _context.Polls
-            .AsNoTracking()
-            .ToListAsync();
+            .Include(x => x.AllPollOptions)
+            .ThenInclude(x => x.AllVotes).ToListAsync();
     }
 
     public async Task<Poll> CreateAsync(Poll poll)
@@ -35,18 +36,16 @@ public class PollRepository : IPollRepository
         await _context.SaveChangesAsync();
         return poll;
     }
-    
+
     public async Task UpdatePoll()
     {
         await _context.SaveChangesAsync();
     }
-    
+
     public async Task DeleteAsync(int id)
     {
         Poll? pollToDelete = await _context.Polls.FindAsync(id);
-        if (pollToDelete == null)
-            throw new Exception("Poll not found");
-        
+
         _context.Polls.Remove(pollToDelete);
         await _context.SaveChangesAsync();
     }
@@ -55,5 +54,4 @@ public class PollRepository : IPollRepository
     {
         return await _context.Polls.AnyAsync(p => p.Id == id);
     }
-
 }

@@ -7,7 +7,7 @@ public class PollOptionDto
     public int PollId { get; set; }
     public List<VoteDto>? AllVotes { get; set; }
     public int? TotalVotes { get; set; } = 0;
-
+    public double VotesPercentage { get; set; } = 0;
     public DateTime CreatedAt { get; set; }
 }
 

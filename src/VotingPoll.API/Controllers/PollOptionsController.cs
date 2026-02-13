@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Mvc;
 using VotingPoll.Core.DTOs;
+using VotingPoll.Core.Exceptions;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
 using VotingPoll.Infrastructure.Validation;
 
@@ -46,11 +48,12 @@ public class PollOptionsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<PollOptionDto>> CreatePollOption(int pollId, CreatePollOptionDto createPollOptionDto)
     {
-        await _createPollOptionDtoValidator.ValidateAsync(createPollOptionDto);
+        ValidationResult validationResult = await _createPollOptionDtoValidator.ValidateAsync(createPollOptionDto);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult);
 
-        PollOptionDto pollOption = await _pollService.CreatePollOption(pollId, createPollOptionDto);
-
-        return CreatedAtAction(nameof(GetPollOption), new { id = pollOption.Id }, pollOption);
+        PollOptionDto pollOption = await _pollOptionService.CreatePollOption(pollId, createPollOptionDto);
+        return CreatedAtAction(nameof(GetPollOption), new { pollId, pollOptionId = pollOption.Id }, pollOption);
     }
 
     #endregion

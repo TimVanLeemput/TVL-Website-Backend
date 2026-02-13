@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VotingPoll.Core.Entities;
+using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Infrastructure.Data;
 
 namespace VotingPoll.Infrastructure.Repositories;
@@ -28,7 +29,6 @@ public class VoteRepository : IVoteRepository
     {
         throw new NotImplementedException();
     }
-
 
     public async Task<Vote?> CreateAsync(Vote? vote)
     {

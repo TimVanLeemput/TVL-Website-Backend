@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using VotingPoll.Core.DTOs;
 using VotingPoll.Core.Entities;
 using VotingPoll.Core.Exceptions;
 using VotingPoll.Core.Interfaces.Repositories;
@@ -9,7 +8,7 @@ namespace VotingPoll.Infrastructure.Repositories;
 
 public class PollOptionRepository : IPollOptionRepository
 {
-    AppDbContext _context;
+    private readonly AppDbContext _context;
 
     public PollOptionRepository(AppDbContext context)
     {
@@ -38,7 +37,7 @@ public class PollOptionRepository : IPollOptionRepository
     {
         await _context.PollOptions.AddAsync(pollOption);
         await _context.SaveChangesAsync();
-        return await Task.FromResult(pollOption);
+        return pollOption;
     }
 
     public async Task<bool> ExistsAsync(int pollId)
@@ -53,15 +52,8 @@ public class PollOptionRepository : IPollOptionRepository
             throw new PollNotFoundException(pollId);
 
         PollOption? pollOption = await _context.PollOptions.FindAsync(pollOptionId);
-        if (pollOption == null)
-            throw new Exception("PollOption not found");
 
         _context.PollOptions.Remove(pollOption);
         await _context.SaveChangesAsync();
-    }
-
-    public async Task<bool> Exists(int pollId)
-    {
-        return await _context.Polls.AnyAsync(p => p.Id == pollId);
     }
 }

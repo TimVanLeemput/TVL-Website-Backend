@@ -10,17 +10,21 @@ namespace VotingPoll.API.Controllers;
 [Route("api/[controller]")]
 public class PollsController : ControllerBase
 {
-    IPollService _pollService;
-    CreatePollDtoValidator _createPollDtoValidator;
-    UpdatePollValidator _updatePollValidator;
+    private readonly ILogger<PollsController> _logger;
+    
+    private readonly IPollService _pollService;
+    
+    private readonly CreatePollDtoValidator _createPollDtoValidator;
+    private readonly UpdatePollValidator _updatePollValidator;
 
     public PollsController(IPollService pollService,
         CreatePollDtoValidator createPollDtoValidator,
-        UpdatePollValidator updatePollValidator)
+        UpdatePollValidator updatePollValidator, ILogger<PollsController> logger)
     {
         _pollService = pollService;
         _createPollDtoValidator = createPollDtoValidator;
         _updatePollValidator = updatePollValidator;
+        _logger = logger;
     }
 
     #region GET
@@ -46,6 +50,13 @@ public class PollsController : ControllerBase
         return Ok(pollCreationDateDto);
     }
 
+    [HttpGet("{id}/results")]
+    public async Task<ActionResult<PollResultsDto>> GetPollResultsById(int id)
+    {
+        PollResultsDto pollResultsDto = await _pollService.GetPollResultsById(id);
+        return Ok(pollResultsDto);
+    }
+
     #endregion
 
     #region Create
@@ -62,8 +73,6 @@ public class PollsController : ControllerBase
 
         return CreatedAtAction(nameof(GetById), new { id = pollDto.PollId }, pollDto);
     }
-
-
 
     #endregion
 

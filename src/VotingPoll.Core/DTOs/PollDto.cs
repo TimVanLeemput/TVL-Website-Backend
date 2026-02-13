@@ -1,15 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace VotingPoll.Core.DTOs;
+﻿namespace VotingPoll.Core.DTOs;
 
 #region Dto Response
 
 public class PollDto
 {
     public int PollId { get; set; }
-
     public string? Title { get; set; } = string.Empty;
-
     public int TotalVotes { get; set; } = 0;
     public List<PollOptionDto>? AllPollOptions { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -21,6 +17,14 @@ public class PollCreationDateDto
     public int PollId { get; set; }
     public string? Title { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+}
+
+public class PollResultsDto
+{
+    public int PollId { get; set; }
+    public string? Title { get; set; } = string.Empty;
+    public int TotalVotes { get; set; } = 0;
+    public List<PollOptionDto>? AllPollOptions { get; set; }
 }
 
 #endregion

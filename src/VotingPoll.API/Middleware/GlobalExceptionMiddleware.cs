@@ -36,13 +36,13 @@ public class GlobalExceptionMiddleware
             await context.Response.WriteAsJsonAsync(new
                 {
                     error = ex.Message,
-                    pollId = ex.Message
+                    pollOptionId = ex.PollOptionId
                 }
             );
         }
         catch (PollOptionNotFoundException ex)
         {
-            context.Response.StatusCode = 400;
+            context.Response.StatusCode = 404;
             await context.Response.WriteAsJsonAsync(new
                 {
                     error = ex.Message,
@@ -52,7 +52,7 @@ public class GlobalExceptionMiddleware
         }
         catch (ListOfPollOptionsNotFoundException ex)
         {
-            context.Response.StatusCode = 400;
+            context.Response.StatusCode = 404;
             await context.Response.WriteAsJsonAsync(new
                 {
                     error = ex.Message,

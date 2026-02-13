@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
-using VotingPoll.Core.DTOs;
+﻿using VotingPoll.Core.DTOs;
 using VotingPoll.Core.Entities;
+using VotingPoll.Core.Exceptions;
 
 namespace VotingPoll.Core.Mappings;
 
@@ -8,36 +8,20 @@ public static class PollMappings
 {
     public static PollDto ToDto(this Poll poll)
     {
-        List<PollOptionDto>? optionDto = poll.AllPollOptions?.Select(options =>
-            new PollOptionDto
-            {
-                Id = options.Id,
-                PollOptionName = options.PollOptionName,
-                PollId = options.PollId,
-                TotalVotes = options.TotalVotes,
-                CreatedAt = options.CreatedAt
-            }).ToList();
+        var optionDtos = GetListOfPollOptionDtosWithVotingResults(poll);
+        if (optionDtos == null)
+            throw new ListOfPollOptionsNotFoundException();
+        int totalVotes = (int)optionDtos.Sum(o => o.TotalVotes);
 
         return new PollDto
         {
             PollId = poll.Id,
             Title = poll.Title,
-            TotalVotes = poll.TotalVotes,
-            AllPollOptions = optionDto,
+            TotalVotes = totalVotes,
+            AllPollOptions = optionDtos,
             CreatedAt = poll.CreatedAt,
             ClosesAt = poll.ClosesAt,
         };
-    }
-
-    public static PollOptionDto ToPollOptionDto(this PollOptionDto pollOptionDto)
-    {
-        PollOptionDto pollOption = new PollOptionDto
-        {
-            PollOptionName = pollOptionDto.PollOptionName,
-            PollId = pollOptionDto.PollId,
-            CreatedAt = DateTime.UtcNow
-        };
-        return pollOption;
     }
 
     public static PollCreationDateDto ToPollCreationDateDto(this Poll poll)
@@ -68,11 +52,55 @@ public static class PollMappings
         List<PollDto> listOfPollDtos = polls.Select(poll => new PollDto
         {
             Title = poll.Title,
-            TotalVotes = poll.TotalVotes,
             CreatedAt = poll.CreatedAt,
             ClosesAt = poll.ClosesAt
         }).ToList();
         return listOfPollDtos;
+    }
+
+    public static List<PollDto> ToListOfPollDtos(this List<Poll> polls, bool showPollOptions)
+    {
+        List<PollDto> listOfPollDtos = polls.Select(poll => new PollDto
+        {
+            Title = poll.Title,
+            AllPollOptions = poll.AllPollOptions.ToPollOptionsDto(),
+            CreatedAt = poll.CreatedAt,
+            ClosesAt = poll.ClosesAt
+        }).ToList();
+        return listOfPollDtos;
+    }
+
+
+    public static PollResultsDto ToPollResultsDto(this Poll poll)
+    {
+        var optionDtos = GetListOfPollOptionDtosWithVotingResults(poll);
+        int totalVotes = poll.AllPollOptions.Sum(o => o.AllVotes.Count);
+        
+        PollResultsDto pollResultsDto = new PollResultsDto()
+        {
+            PollId = poll.Id,
+            Title = poll.Title,
+            TotalVotes = totalVotes,
+            AllPollOptions = optionDtos,
+        };
+
+        return pollResultsDto;
+    }
+
+    private static List<PollOptionDto>? GetListOfPollOptionDtosWithVotingResults(Poll poll)
+    {
+        int totalVotes = poll.AllPollOptions.Sum(o => o.AllVotes.Count);
+        List<PollOptionDto>? optionDto = poll.AllPollOptions?.Select(options =>
+            new PollOptionDto
+            {
+                Id = options.Id,
+                PollOptionName = options.PollOptionName,
+                PollId = options.PollId,
+                TotalVotes = options.AllVotes.Count,
+                VotesPercentage = totalVotes > 0 ? Math.Round((double)options.AllVotes.Count / totalVotes * 100, 1) : 0,
+                CreatedAt = options.CreatedAt
+            }).ToList();
+        return optionDto;
     }
 
     public static void ApplyTo(this UpdatePollDto dto, Poll poll)

@@ -1,6 +1,6 @@
 ﻿using VotingPoll.Core.Entities;
 
-namespace VotingPoll.Infrastructure.Repositories;
+namespace VotingPoll.Core.Interfaces.Repositories;
 
 public interface IVoteRepository
 {

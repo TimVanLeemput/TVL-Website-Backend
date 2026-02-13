@@ -5,7 +5,6 @@ using VotingPoll.Core.Exceptions;
 using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
 using VotingPoll.Core.Mappings;
-using VotingPoll.Infrastructure.Repositories;
 
 namespace VotingPoll.Core.Services;
 
@@ -59,11 +58,9 @@ public class VotingService : IVotingService
         if (userAlreadyVoted)
             throw new AlreadyVotedException(createVoteDto.UserId);
 
-        PollOption? option = await _pollOptionRepository.GetAsync(pollId,createVoteDto.PollOptionId);
+        PollOption? option = await _pollOptionRepository.GetAsync(pollId, createVoteDto.PollOptionId);
         if (option == null)
             throw new InvalidPollOptionException();
-        if (option.PollId != pollId)
-            throw new InvalidPollOptionException(option.PollId);
 
         Vote vote = createVoteDto.ToEntity(pollId);
         _logger.LogInformation($"Created vote for poll with id {pollId}");

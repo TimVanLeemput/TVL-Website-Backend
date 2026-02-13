@@ -1,9 +1,7 @@
 ﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using VotingPoll.Core.DTOs;
-using VotingPoll.Core.Entities;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
-using VotingPoll.Infrastructure.Repositories;
 using VotingPoll.Infrastructure.Validation;
 
 namespace VotingPoll.API.Controllers;
@@ -23,6 +21,8 @@ public class VotesController : ControllerBase
         _createVoteRequestValidator = createVoteRequestValidator;
     }
 
+    #region GET
+
     [HttpGet]
     public async Task<ActionResult<List<VoteDto>>> GetAllVotesForPoll(int pollId)
     {
@@ -39,6 +39,9 @@ public class VotesController : ControllerBase
         return Ok(voteDto);
     }
 
+    #endregion
+
+    #region POST
 
     [HttpPost]
     public async Task<ActionResult<VoteConfirmationDto>> Create(int pollId, CreateVoteDto createVoteDto)
@@ -49,4 +52,6 @@ public class VotesController : ControllerBase
 
         return await _votingService.Create(pollId, createVoteDto);
     }
+
+    #endregion
 }

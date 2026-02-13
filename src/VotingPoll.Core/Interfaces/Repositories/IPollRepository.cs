@@ -1,6 +1,6 @@
 ﻿using VotingPoll.Core.Entities;
 
-namespace VotingPoll.Infrastructure.Repositories;
+namespace VotingPoll.Core.Interfaces.Repositories;
 
 // In Core project — defines WHAT operations exist
 public interface IPollRepository

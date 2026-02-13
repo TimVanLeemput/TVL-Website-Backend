@@ -1,23 +1,24 @@
-﻿using VotingPoll.Core.DTOs;
+﻿using Microsoft.Extensions.Logging;
+using VotingPoll.Core.DTOs;
 using VotingPoll.Core.Entities;
 using VotingPoll.Core.Exceptions;
 using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
 using VotingPoll.Core.Mappings;
-using VotingPoll.Infrastructure.Repositories;
 
 namespace VotingPoll.Core.Services;
 
 public class PollService : IPollService
 {
-    private readonly IPollOptionRepository _pollOptionRepository;
+    // todo create a method to GetAllPollsWithAllOptionsAndAllVotesPercentage etc.. all in one call
+    
+    private readonly ILogger<PollService> _logger;
     private readonly IPollRepository _pollRepository;
 
-    public PollService(
-        IPollOptionRepository pollOptionRepository, IPollRepository pollRepository)
+    public PollService(IPollRepository pollRepository, ILogger<PollService> logger)
     {
-        _pollOptionRepository = pollOptionRepository;
         _pollRepository = pollRepository;
+        _logger = logger;
     }
 
     public async Task<List<PollDto>> GetAll()
@@ -26,7 +27,7 @@ public class PollService : IPollService
         if (polls.Count == 0)
             throw new PollNotFoundException();
 
-        List<PollDto> listOfPolLDtos = polls.ToListOfPollDtos();
+        List<PollDto> listOfPolLDtos = polls.ToListOfPollDtos(true);
 
         return listOfPolLDtos;
     }
@@ -46,6 +47,13 @@ public class PollService : IPollService
         return poll.ToPollCreationDateDto();
     }
 
+    public async Task<PollResultsDto> GetPollResultsById(int id)
+    {
+        Poll poll = await GetPollOrThrow(id);
+        PollResultsDto pollResultsDt = poll.ToPollResultsDto();
+        return pollResultsDt;
+    }
+
     public async Task<PollDto> Create(CreatePollDto createPollDto)
     {
         Poll createdPoll = createPollDto.ToEntity();
@@ -54,17 +62,6 @@ public class PollService : IPollService
         PollDto createdPollDto = createdPoll.ToDto();
 
         return createdPollDto;
-    }
-
-    public async Task<PollOptionDto> CreatePollOption(int id, CreatePollOptionDto createPollOptionDto)
-    {
-        await GetPollOrThrow(id);
-
-        PollOption pollOption = createPollOptionDto.ToEntity(id);
-        await _pollOptionRepository.CreateAsync(pollOption);
-        PollOptionDto pollOptionDto = pollOption.ToPollOptionDto(id);
-
-        return pollOptionDto;
     }
 
     public async Task<PollDto> UpdatePoll(int id, UpdatePollDto? pollIn)
