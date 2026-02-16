@@ -7,7 +7,7 @@ namespace VotingPoll.Infrastructure.Repositories;
 
 public class VoteRepository : IVoteRepository
 {
-    AppDbContext _context;
+    private readonly AppDbContext _context;
 
     public VoteRepository(AppDbContext context)
     {
@@ -30,37 +30,28 @@ public class VoteRepository : IVoteRepository
         return await query.ToListAsync();
     }
 
-    public async Task<int> GetAllVotesCountAsync()
+    public async Task<Vote?> GetByIdAsync(int voteId)
     {
-        IQueryable<Vote> query = _context.Votes;
+        return await _context.Votes.AsNoTracking().FirstOrDefaultAsync(x => x.Id == voteId);
+    }
+
+    public async Task<int> GetVoteCountForPollAsync(int pollId)
+    {
+        IQueryable<Vote> query = _context.Votes.Where(x => x.PollId == pollId);
 
         return await query
             .CountAsync();
     }
 
-    public async Task<Vote?> GetAsync(int pollId)
+    public async Task<Vote> CreateAsync(Vote vote)
     {
-        return await _context.Votes.AsNoTracking().FirstOrDefaultAsync(x => x.PollId == pollId);
-    }
-
-    public async Task<int> GetAllForPollOptionAsync(int pollId)
-    {
-        IQueryable<Vote> query =  _context.Votes.Where(x => x.PollId ==  pollId);
-
-
-        return await query
-            .CountAsync();
-    }
-
-    public async Task<Vote?> CreateAsync(Vote? vote)
-    {
-        _context.Votes.Add(vote!);
+        _context.Votes.Add(vote);
         await _context.SaveChangesAsync();
 
-        return await Task.FromResult(vote);
+        return vote;
     }
 
-    public Task<bool> ExistsAsync(int pollId)
+    public Task<bool> ExistsAsync(int voteId)
     {
         throw new NotImplementedException();
     }

@@ -28,7 +28,7 @@ public class VotingService : IVotingService
 
     public async Task<VoteDto> GetById(int id)
     {
-        Vote? vote = await _voteRepository.GetAsync(id);
+        Vote? vote = await _voteRepository.GetByIdAsync(id);
         if (vote == null)
             throw new VoteNotFoundException(id);
 
@@ -39,7 +39,7 @@ public class VotingService : IVotingService
 
     public async Task<PagedList<VoteDto>> GetAllVotesForPoll(int pollId, int? page = null, int? pageSize = null)
     {
-        int totalCount = await _voteRepository.GetAllForPollOptionAsync(pollId);
+        int totalCount = await _voteRepository.GetVoteCountForPollAsync(pollId);
         List<Vote> votes = await _voteRepository.GetAllAsync(pollId, page, pageSize);
 
         List<VoteDto> votesDto = votes.ToListOfVotesDto();
