@@ -18,6 +18,6 @@ public class CreateVoteDto
 public class VoteConfirmationDto
 {
     public string? PollTitle { get; set; }  = string.Empty;
-    public string PollOptionName { get; set; } = string.Empty;
+    public string? PollOptionName { get; set; } = string.Empty;
     public DateTime VotedAt { get; set; }
 }

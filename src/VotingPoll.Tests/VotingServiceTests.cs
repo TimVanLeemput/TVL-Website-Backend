@@ -1,0 +1,97 @@
+﻿using Microsoft.Extensions.Logging;
+using Moq;
+using VotingPoll.Core.Entities;
+using VotingPoll.Core.Exceptions;
+using VotingPoll.Core.Interfaces.Repositories;
+using VotingPoll.Core.Models.DTOs;
+using VotingPoll.Core.Services;
+
+namespace VotingPoll.Tests;
+
+public class VotingServiceTests
+{
+    private readonly Mock<IPollRepository> _pollRepoMock;
+    private readonly Mock<IVoteRepository> _voteRepoMock;
+    private readonly Mock<IPollOptionRepository> _pollOptionRepoMock;
+    private readonly Mock<ILogger<VotingService>> _loggerMock;
+    private readonly VotingService _sut; // System Under Test
+
+    public VotingServiceTests()
+    {
+        _pollRepoMock = new Mock<IPollRepository>();
+        _voteRepoMock = new Mock<IVoteRepository>();
+        _pollOptionRepoMock = new Mock<IPollOptionRepository>();
+        _loggerMock = new Mock<ILogger<VotingService>>();
+        _sut = new VotingService(_loggerMock.Object, _voteRepoMock.Object, _pollRepoMock.Object,
+            _pollOptionRepoMock.Object);
+    }
+
+    [Fact]
+    public async Task CastVote_PollNotFound_ThrowsPollNotFoundException()
+    {
+        // Arrange
+        _pollRepoMock.Setup(r => r.GetByIdAsync(999))
+            .ReturnsAsync((Poll?)null);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<PollNotFoundException>(() =>
+            _sut.Create(999, new CreateVoteDto() { PollOptionId = 1, UserId = "user1" }));
+    }
+
+    [Fact]
+    public async Task CastVote_UserAlreadyVoted_ThrowsAlreadyVotedException()
+    {
+        // Arrange
+        Poll poll = new Poll
+        {
+            Id = 1,
+            Title = "Test Poll",
+            AllPollOptions = new List<PollOption>
+            {
+                new PollOption { Id = 1, PollOptionName = "Option A", PollId = 1 }
+            },
+            ClosesAt = DateTime.UtcNow.AddDays(1)
+        };
+
+        _pollRepoMock.Setup(r => r.GetByIdAsync(1))
+            .ReturnsAsync(poll);
+        _voteRepoMock.Setup(r => r.UserAlreadyVotedAsync(1, "user1"))
+            .ReturnsAsync(true);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<AlreadyVotedException>(() =>
+            _sut.Create(1, new CreateVoteDto() { PollOptionId = 1, UserId = "user1" }));
+    }
+
+    [Fact]
+    public async Task CastVote_ValidVote_CreatesVoteAndReturnsConfirmation()
+    {
+        // Arrange
+        PollOption pollOption = new PollOption { Id = 1, PollOptionName = "Option A", PollId = 1 }; // Added this line 
+        Poll poll = new Poll
+        {
+            Id = 1,
+            Title = "Test Poll",
+            AllPollOptions = new List<PollOption>
+            {
+                pollOption
+            },
+            ClosesAt = DateTime.UtcNow.AddDays(1)
+            
+        };
+        _pollRepoMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(poll);
+        _pollOptionRepoMock.Setup(r => r.GetAsync(1,1)).ReturnsAsync(pollOption); // Added this line 
+        _voteRepoMock.Setup(r => r.UserAlreadyVotedAsync(1, "user1")).ReturnsAsync(false);
+        _voteRepoMock.Setup(r => r.CreateAsync(It.IsAny<Vote>()))
+            .ReturnsAsync((Vote v) => v);
+
+        // Act
+        VoteConfirmationDto result = await _sut.Create(1, new CreateVoteDto() { PollOptionId = 1, UserId = "user1" });
+
+        // Assert
+        Assert.Equal("Test Poll", result.PollTitle);
+        Assert.Equal("Option A", result.PollOptionName);
+        _voteRepoMock.Verify(r => r.CreateAsync(It.Is<Vote>(v =>
+            v.PollId == 1 && v.PollOptionId == 1 && v.UserId == "user1")), Times.Once);
+    }
+}

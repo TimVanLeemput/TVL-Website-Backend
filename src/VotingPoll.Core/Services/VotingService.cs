@@ -60,7 +60,7 @@ public class VotingService : IVotingService
         if (userAlreadyVoted)
             throw new AlreadyVotedException(createVoteDto.UserId);
 
-        PollOption? option = await _pollOptionRepository.GetAsync(pollId, createVoteDto.PollOptionId);
+        PollOption option = await _pollOptionRepository.GetAsync(pollId, createVoteDto.PollOptionId);
         if (option == null)
             throw new InvalidPollOptionException();
 

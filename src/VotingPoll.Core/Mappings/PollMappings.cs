@@ -36,12 +36,12 @@ public static class PollMappings
     }
 
     public static VoteConfirmationDto ToVoteConfirmationDto(this Poll poll,
-        PollOption pollOption)
+        PollOption? pollOption)
     {
         VoteConfirmationDto voteConfirmationDto = new VoteConfirmationDto
         {
             PollTitle = poll.Title,
-            PollOptionName = pollOption.PollOptionName,
+            PollOptionName = pollOption?.PollOptionName,
             VotedAt = DateTime.UtcNow
         };
         return voteConfirmationDto;
