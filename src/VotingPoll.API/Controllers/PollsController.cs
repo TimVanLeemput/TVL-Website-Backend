@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VotingPoll.Core.DTOs;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
+using VotingPoll.Core.Models;
+using VotingPoll.Core.Models.DTOs;
 using VotingPoll.Infrastructure.Validation;
 using ValidationResult = FluentValidation.Results.ValidationResult;
 
@@ -11,9 +12,9 @@ namespace VotingPoll.API.Controllers;
 public class PollsController : ControllerBase
 {
     private readonly ILogger<PollsController> _logger;
-    
+
     private readonly IPollService _pollService;
-    
+
     private readonly CreatePollDtoValidator _createPollDtoValidator;
     private readonly UpdatePollValidator _updatePollValidator;
 
@@ -30,9 +31,9 @@ public class PollsController : ControllerBase
     #region GET
 
     [HttpGet]
-    public async Task<ActionResult<List<PollDto>>> GetAll()
+    public async Task<ActionResult<PagedList<PollDto>>> GetAll([FromQuery]  bool? isOpen = null, int? page = null, int? pageSize = null)
     {
-        return await _pollService.GetAll();
+        return await _pollService.GetAll(isOpen, page, pageSize);
     }
 
     [HttpGet("{id}")]

@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
-using VotingPoll.Core.DTOs;
 using VotingPoll.Core.Entities;
 using VotingPoll.Core.Exceptions;
 using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
 using VotingPoll.Core.Mappings;
+using VotingPoll.Core.Models;
+using VotingPoll.Core.Models.DTOs;
 
 namespace VotingPoll.Core.Services;
 
@@ -21,15 +22,16 @@ public class PollService : IPollService
         _logger = logger;
     }
 
-    public async Task<List<PollDto>> GetAll()
+    public async Task<PagedList<PollDto>> GetAll(bool? isOpen = null, int? page = null, int? pageSize = null)
     {
-        List<Poll> polls = await _pollRepository.GetAllAsync();
-        if (polls.Count == 0)
-            throw new PollNotFoundException();
-
+        int totalCount = await _pollRepository.GetAllPollsCountAsync(isOpen);
+        
+        List<Poll> polls = await _pollRepository.GetAllAsync(isOpen, page, pageSize);
+        
         List<PollDto> listOfPolLDtos = polls.ToListOfPollDtos(true);
+        PagedList<PollDto> pagedPollList = new PagedList<PollDto>(listOfPolLDtos, totalCount, page, pageSize);
 
-        return listOfPolLDtos;
+        return pagedPollList;
     }
 
     public async Task<PollDto> GetById(int id)
@@ -70,9 +72,6 @@ public class PollService : IPollService
         if (pollToUpdate == null) throw new PollNotFoundException(id);
 
         pollIn?.ApplyTo(pollToUpdate);
-
-        if (pollIn?.ClosesAt < DateTime.UtcNow)
-            throw new PollClosedException(id);
 
         await _pollRepository.UpdatePoll();
         PollDto pollDto = pollToUpdate.ToDto();

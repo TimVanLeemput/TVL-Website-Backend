@@ -43,7 +43,7 @@ public class AppDbContext : DbContext
 
         // Index
         // -- "For the Vote table, create an index on the combination of PollId and
-        //     UserId, and make sure that combination is unique - no duplicates allowed." -- 
+        //     UserId, and make sure that combination is unique - no duplicates allowed. This also improved query performance" -- 
         modelBuilder.Entity<Vote>().HasIndex(v => new {v.PollId, v.UserId }).IsUnique();
     }
 }

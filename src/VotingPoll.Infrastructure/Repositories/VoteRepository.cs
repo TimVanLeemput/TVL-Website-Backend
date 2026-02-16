@@ -14,10 +14,28 @@ public class VoteRepository : IVoteRepository
         _context = context;
     }
 
-    public async Task<List<Vote>> GetAllAsync(int pollId)
+    public async Task<List<Vote>> GetAllAsync(int pollId, int? page = null, int? pageSize = null)
     {
-        List<Vote> votes = await _context.Votes.AsNoTracking().Where(x => x.PollId == pollId).ToListAsync();
-        return votes;
+        IQueryable<Vote> query = _context.Votes.AsNoTracking().Where(x => x.PollId == pollId)
+            .OrderBy(x => x.Id);
+
+        if (page != null || pageSize != null)
+        {
+            if (page == null || page == 0) page = 1;
+            if (pageSize == null || pageSize == 0) pageSize = 10;
+            query = query.Skip((page.Value - 1) *
+                               pageSize.Value).Take(pageSize.Value);
+        }
+
+        return await query.ToListAsync();
+    }
+
+    public async Task<int> GetAllVotesCountAsync()
+    {
+        IQueryable<Vote> query = _context.Votes;
+
+        return await query
+            .CountAsync();
     }
 
     public async Task<Vote?> GetAsync(int pollId)
@@ -25,16 +43,20 @@ public class VoteRepository : IVoteRepository
         return await _context.Votes.AsNoTracking().FirstOrDefaultAsync(x => x.PollId == pollId);
     }
 
-    public Task<List<Vote>> GetAllForPollOptionAsync(int pollId, int pollOptionId)
+    public async Task<int> GetAllForPollOptionAsync(int pollId)
     {
-        throw new NotImplementedException();
+        IQueryable<Vote> query =  _context.Votes.Where(x => x.PollId ==  pollId);
+
+
+        return await query
+            .CountAsync();
     }
 
     public async Task<Vote?> CreateAsync(Vote? vote)
     {
         _context.Votes.Add(vote!);
         await _context.SaveChangesAsync();
-        
+
         return await Task.FromResult(vote);
     }
 

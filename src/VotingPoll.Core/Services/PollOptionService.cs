@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using VotingPoll.Core.DTOs;
 using VotingPoll.Core.Entities;
 using VotingPoll.Core.Exceptions;
 using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
 using VotingPoll.Core.Mappings;
+using VotingPoll.Core.Models.DTOs;
 
 namespace VotingPoll.Core.Services;
 

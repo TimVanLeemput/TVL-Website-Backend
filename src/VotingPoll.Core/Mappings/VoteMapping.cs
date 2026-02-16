@@ -1,5 +1,5 @@
-﻿using VotingPoll.Core.DTOs;
-using VotingPoll.Core.Entities;
+﻿using VotingPoll.Core.Entities;
+using VotingPoll.Core.Models.DTOs;
 
 namespace VotingPoll.Core.Mappings;
 

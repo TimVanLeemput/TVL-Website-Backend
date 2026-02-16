@@ -1,7 +1,8 @@
 ﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
-using VotingPoll.Core.DTOs;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
+using VotingPoll.Core.Models;
+using VotingPoll.Core.Models.DTOs;
 using VotingPoll.Infrastructure.Validation;
 
 namespace VotingPoll.API.Controllers;
@@ -24,9 +25,9 @@ public class VotesController : ControllerBase
     #region GET
 
     [HttpGet]
-    public async Task<ActionResult<List<VoteDto>>> GetAllVotesForPoll(int pollId)
+    public async Task<ActionResult<PagedList<VoteDto>>> GetAllVotesForPoll(int pollId, int? page = null, int? pageSize = null)
     {
-        List<VoteDto> votesDto = await _votingService.GetAllVotesForPoll(pollId);
+        PagedList<VoteDto> votesDto = await _votingService.GetAllVotesForPoll(pollId, page, pageSize);
 
         return Ok(votesDto);
     }

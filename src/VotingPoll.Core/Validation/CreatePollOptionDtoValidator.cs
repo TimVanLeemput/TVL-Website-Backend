@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using VotingPoll.Core.DTOs;
+using VotingPoll.Core.Models.DTOs;
 
 namespace VotingPoll.Infrastructure.Validation;
 

@@ -1,10 +1,11 @@
-﻿using VotingPoll.Core.DTOs;
+﻿using VotingPoll.Core.Models;
+using VotingPoll.Core.Models.DTOs;
 
 namespace VotingPoll.Core.Interfaces.ServicesInterfaces;
 
 public interface IPollService
 {
-    public Task<List<PollDto>> GetAll();
+    public Task<PagedList<PollDto>> GetAll(bool? isOpen = null, int? page = null, int? pageSize = null);
     public Task<PollDto> GetById(int id);
     public Task<PollCreationDateDto> GetPollCreationDateById(int id);
     public Task<PollResultsDto> GetPollResultsById(int id);

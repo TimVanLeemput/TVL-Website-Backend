@@ -1,8 +1,8 @@
 ﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
-using VotingPoll.Core.DTOs;
 using VotingPoll.Core.Exceptions;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
+using VotingPoll.Core.Models.DTOs;
 using VotingPoll.Infrastructure.Validation;
 
 namespace VotingPoll.API.Controllers;

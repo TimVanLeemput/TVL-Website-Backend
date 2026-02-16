@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
-using VotingPoll.Core.DTOs;
 using VotingPoll.Core.Entities;
 using VotingPoll.Core.Exceptions;
 using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
 using VotingPoll.Core.Mappings;
+using VotingPoll.Core.Models;
+using VotingPoll.Core.Models.DTOs;
 
 namespace VotingPoll.Core.Services;
 
@@ -36,13 +37,14 @@ public class VotingService : IVotingService
         return voteDto;
     }
 
-    public async Task<List<VoteDto>> GetAllVotesForPoll(int pollId)
+    public async Task<PagedList<VoteDto>> GetAllVotesForPoll(int pollId, int? page = null, int? pageSize = null)
     {
-        List<Vote> votes = await _voteRepository.GetAllAsync(pollId);
+        int totalCount = await _voteRepository.GetAllForPollOptionAsync(pollId);
+        List<Vote> votes = await _voteRepository.GetAllAsync(pollId, page, pageSize);
 
         List<VoteDto> votesDto = votes.ToListOfVotesDto();
-
-        return votesDto;
+        PagedList<VoteDto> pagedListOfVotesDto = new PagedList<VoteDto>(votesDto, totalCount, page, pageSize);
+        return pagedListOfVotesDto;
     }
 
     public async Task<VoteConfirmationDto> Create(int pollId, CreateVoteDto createVoteDto)

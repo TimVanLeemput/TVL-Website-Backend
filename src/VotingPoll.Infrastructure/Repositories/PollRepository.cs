@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using VotingPoll.Core.Entities;
 using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Infrastructure.Data;
@@ -9,10 +10,12 @@ namespace VotingPoll.Infrastructure.Repositories;
 public class PollRepository : IPollRepository
 {
     private readonly AppDbContext _context;
+    private readonly ILogger<PollRepository> _logger;
 
-    public PollRepository(AppDbContext context)
+    public PollRepository(AppDbContext context, ILogger<PollRepository> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<Poll?> GetByIdAsync(int id)
@@ -23,11 +26,46 @@ public class PollRepository : IPollRepository
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<List<Poll>> GetAllAsync()
+    public async Task<List<Poll>> GetAllAsync(bool? isOpen = null, int? page = null, int? pageSize = null)
     {
-        return await _context.Polls
+        IQueryable<Poll> query = _context.Polls
             .Include(x => x.AllPollOptions)
-            .ThenInclude(x => x.AllVotes).ToListAsync();
+            .ThenInclude(x => x.AllVotes)
+            .AsSplitQuery()
+            .OrderBy(x => x.Id);
+
+        query = ApplyFilters(query, isOpen);
+
+        if (page != null || pageSize != null)
+        {
+            if (page == null || page == 0) page = 1;
+            if (pageSize == null || pageSize == 0) pageSize = 10;
+            query = query.Skip((page.Value - 1) *
+                               pageSize.Value).Take(pageSize.Value);
+        }
+
+        return await query.ToListAsync();
+    }
+
+    public async Task<int> GetAllPollsCountAsync(bool? isOpen = null)
+    {
+        IQueryable<Poll> query = _context.Polls;
+
+        query = ApplyFilters(query, isOpen);
+
+        return await query
+            .CountAsync();
+    }
+
+    private IQueryable<Poll> ApplyFilters(IQueryable<Poll> query,
+        bool? isOpen)
+    {
+        if (isOpen == true)
+            query = query.Where(x => x.ClosesAt > DateTime.UtcNow);
+        else if (isOpen == false)
+            query = query.Where(x => x.ClosesAt < DateTime.UtcNow);
+
+        return query;
     }
 
     public async Task<Poll> CreateAsync(Poll poll)

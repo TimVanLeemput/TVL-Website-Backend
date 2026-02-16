@@ -1,4 +1,4 @@
-﻿namespace VotingPoll.Core.DTOs;
+﻿namespace VotingPoll.Core.Models.DTOs;
 
 public class VoteDto
 {
