@@ -12,11 +12,11 @@ namespace VotingPoll.Core.Services;
 public class PollService : IPollService
 {
     // todo create a method to GetAllPollsWithAllOptionsAndAllVotesPercentage etc.. all in one call
-    
+
     private readonly ILogger<PollService> _logger;
     private readonly IPollRepository _pollRepository;
 
-    public PollService(IPollRepository pollRepository, ILogger<PollService> logger)
+    public PollService(ILogger<PollService> logger, IPollRepository pollRepository)
     {
         _pollRepository = pollRepository;
         _logger = logger;
@@ -25,9 +25,9 @@ public class PollService : IPollService
     public async Task<PagedList<PollDto>> GetAll(bool? isOpen = null, int? page = null, int? pageSize = null)
     {
         int totalCount = await _pollRepository.GetAllPollsCountAsync(isOpen);
-        
+
         List<Poll> polls = await _pollRepository.GetAllAsync(isOpen, page, pageSize);
-        
+
         List<PollDto> listOfPolLDtos = polls.ToListOfPollDtos(true);
         PagedList<PollDto> pagedPollList = new PagedList<PollDto>(listOfPolLDtos, totalCount, page, pageSize);
 

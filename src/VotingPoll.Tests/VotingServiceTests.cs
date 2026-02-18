@@ -8,6 +8,10 @@ using VotingPoll.Core.Services;
 
 namespace VotingPoll.Tests;
 
+/// <summary>
+///  To be able to see which methods are being tested in console:
+///   dotnet test src/VotingPoll.Tests --logger "console;verbosity=detailed"
+/// </summary>
 public class VotingServiceTests
 {
     private readonly Mock<IPollRepository> _pollRepoMock;
@@ -27,7 +31,7 @@ public class VotingServiceTests
     }
 
     [Fact]
-    public async Task CastVote_PollNotFound_ThrowsPollNotFoundException()
+    public async Task CreateVote_PollNotFound_ThrowsPollNotFoundException()
     {
         // Arrange
         _pollRepoMock.Setup(r => r.GetByIdAsync(999))
@@ -39,7 +43,7 @@ public class VotingServiceTests
     }
 
     [Fact]
-    public async Task CastVote_UserAlreadyVoted_ThrowsAlreadyVotedException()
+    public async Task CreateVote_UserAlreadyVoted_ThrowsAlreadyVotedException()
     {
         // Arrange
         Poll poll = new Poll
@@ -64,7 +68,7 @@ public class VotingServiceTests
     }
 
     [Fact]
-    public async Task CastVote_ValidVote_CreatesVoteAndReturnsConfirmation()
+    public async Task CreateVote_ValidVote_CreatesVoteAndReturnsConfirmation()
     {
         // Arrange
         PollOption pollOption = new PollOption { Id = 1, PollOptionName = "Option A", PollId = 1 }; // Added this line 
@@ -77,10 +81,9 @@ public class VotingServiceTests
                 pollOption
             },
             ClosesAt = DateTime.UtcNow.AddDays(1)
-            
         };
         _pollRepoMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(poll);
-        _pollOptionRepoMock.Setup(r => r.GetAsync(1,1)).ReturnsAsync(pollOption); // Added this line 
+        _pollOptionRepoMock.Setup(r => r.GetAsync(1, 1)).ReturnsAsync(pollOption); // Added this line 
         _voteRepoMock.Setup(r => r.UserAlreadyVotedAsync(1, "user1")).ReturnsAsync(false);
         _voteRepoMock.Setup(r => r.CreateAsync(It.IsAny<Vote>()))
             .ReturnsAsync((Vote v) => v);
@@ -93,5 +96,60 @@ public class VotingServiceTests
         Assert.Equal("Option A", result.PollOptionName);
         _voteRepoMock.Verify(r => r.CreateAsync(It.Is<Vote>(v =>
             v.PollId == 1 && v.PollOptionId == 1 && v.UserId == "user1")), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateVote_PollClosed_ThrowsPollClosedException()
+    {
+        Poll poll = new Poll
+        {
+            Id = 1,
+            Title = "Test Poll",
+            ClosesAt = DateTime.UtcNow.AddDays(-1)
+        };
+
+        _pollRepoMock.Setup(rule => rule.GetByIdAsync(1)).ReturnsAsync((poll));
+        await Assert.ThrowsAsync<PollClosedException>(() =>
+            _sut.Create(1, new CreateVoteDto { PollOptionId = 1, UserId = "user1" }));
+    }
+
+    [Fact]
+    public async Task CreateVote__WrongPollOptionId_ThrowInValidPollOptionException()
+    {
+        PollOption pollOption = new PollOption { Id = 1, PollOptionName = "Option A", PollId = 1 };
+        Poll poll = new Poll
+        {
+            Id = 1,
+            Title = "Test Poll",
+            AllPollOptions = new List<PollOption>
+            {
+                pollOption
+            }
+        };
+
+        _pollRepoMock.Setup(rule => rule.GetByIdAsync(1)).ReturnsAsync(poll);
+
+        await Assert.ThrowsAsync<InvalidPollOptionException>(() =>
+            _sut.Create(1, new CreateVoteDto { PollOptionId = 2, UserId = "user1" }));
+    }
+    
+    [Fact]
+    public async Task CreateVote_PollOptionIsNull_ThrowInValidPollOptionException()
+    {
+        PollOption pollOption = new PollOption { Id = 1, PollOptionName = "Option A", PollId = 1 };
+        Poll poll = new Poll
+        {
+            Id = 1,
+            Title = "Test Poll",
+            AllPollOptions = new List<PollOption>
+            {
+                pollOption
+            }
+        };
+
+        _pollRepoMock.Setup(rule => rule.GetByIdAsync(1)).ReturnsAsync(poll);
+
+        await Assert.ThrowsAsync<InvalidPollOptionException>(() =>
+            _sut.Create(1, new CreateVoteDto { UserId = "user1" }));
     }
 }
