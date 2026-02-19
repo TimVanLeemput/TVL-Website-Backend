@@ -18,7 +18,13 @@ using VotingPoll.Infrastructure.Repositories;
 using VotingPoll.Infrastructure.Validation;
 
 // --------------------------------------------------------APP CONTAINER / SETUP--------------------------------------
-
+// PROTECTING BACKEND WHILE IN DEV MODE
+// Quick disable later (when you want backend open again)
+//
+// 1. Set BackendSafeguards:Lockdown:Enabled to false.
+// 2. Optionally set BackendSafeguards:EnforceJsonWriteContentType to false.
+// 3. Remove/comment app.UseRateLimiter(); and app.UseMiddleware<MaintenanceModeMiddleware>(); in
+// TVL-Website-Backend/src/VotingPoll.API/Program.cs:97.
 #region App container
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
