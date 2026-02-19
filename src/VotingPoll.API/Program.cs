@@ -6,7 +6,9 @@
 //4. Run                   (app.Run())
 
 using FluentValidation;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.RateLimiting;
 using VotingPoll.API.Middleware;
 using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
@@ -23,6 +25,34 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 2 * 1024 * 1024; // 2 MB
+    options.MultipartHeadersCountLimit = 20;
+    options.MultipartHeadersLengthLimit = 4096;
+    options.MultipartBoundaryLengthLimit = 128;
+    options.ValueCountLimit = 64;
+    options.ValueLengthLimit = 4096;
+});
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 2 * 1024 * 1024; // 2 MB
+});
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 60,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+            })
+    );
+});
 
 #region Repositories
 
@@ -64,6 +94,8 @@ WebApplication app = builder.Build();
 
 #region Middleware
 
+app.UseRateLimiter();
+app.UseMiddleware<MaintenanceModeMiddleware>();
 app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
