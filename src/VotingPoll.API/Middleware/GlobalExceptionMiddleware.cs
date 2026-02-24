@@ -100,6 +100,7 @@ public class GlobalExceptionMiddleware
             //     Message = "An unexpected error occurred - TVL",
             //     TraceId = context.TraceIdentifier
             // };
+            // await ExceptionWriter.WriteErrorResponse(context, 500, $"{ex.GetType().Name}:Unhandled exception! Contact developer. {ex.Message}");
             await ExceptionWriter.WriteErrorResponse(context, 500,
                 "Unhandled exception - Please contact the developer.");
 

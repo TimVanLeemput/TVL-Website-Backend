@@ -16,7 +16,7 @@ public class PollService : IPollService
     private readonly ILogger<PollService> _logger;
     private readonly IPollRepository _pollRepository;
 
-    public PollService(ILogger<PollService> logger, IPollRepository pollRepository)
+    public PollService(ILogger<PollService>? logger, IPollRepository pollRepository)
     {
         _pollRepository = pollRepository;
         _logger = logger;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VotingPoll.Core.Entities;
+using VotingPoll.Core.Entities.Authentication;
 
 namespace VotingPoll.Infrastructure.Data;
 
@@ -12,6 +13,8 @@ public class AppDbContext : DbContext
     public DbSet<Poll> Polls { get; set; }
     public DbSet<PollOption> PollOptions { get; set; }
     public DbSet<Vote> Votes { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     // Fluent API
     protected override void OnModelCreating(ModelBuilder modelBuilder)

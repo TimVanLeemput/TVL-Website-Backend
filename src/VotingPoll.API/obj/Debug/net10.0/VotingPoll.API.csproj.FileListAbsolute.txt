@@ -161,3 +161,4 @@ C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.API\o
 C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.API\obj\Debug\net10.0\ref\VotingPoll.API.dll
 C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\votingpoll.api\bin\Debug\net10.0\FluentValidation.dll
 C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\votingpoll.api\bin\Debug\net10.0\FluentValidation.DependencyInjectionExtensions.dll
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\votingpoll.api\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

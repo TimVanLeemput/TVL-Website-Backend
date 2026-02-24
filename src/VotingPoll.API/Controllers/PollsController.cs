@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
 using VotingPoll.Core.Models;
 using VotingPoll.Core.Models.DTOs;
@@ -30,12 +31,15 @@ public class PollsController : ControllerBase
 
     #region GET
 
+    [Authorize]
     [HttpGet]
-    public async Task<ActionResult<PagedList<PollDto>>> GetAll([FromQuery]  bool? isOpen = null, int? page = null, int? pageSize = null)
+    public async Task<ActionResult<PagedList<PollDto>>> GetAll([FromQuery] bool? isOpen = null, int? page = null,
+        int? pageSize = null)
     {
         return await _pollService.GetAll(isOpen, page, pageSize);
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<PollDto>> GetById(int id)
     {
@@ -44,6 +48,7 @@ public class PollsController : ControllerBase
         return Ok(pollDto);
     }
 
+    [Authorize]
     [HttpGet("{id}/creationDate")]
     public async Task<ActionResult<PollCreationDateDto>> GetPollCreationDateById(int id)
     {
@@ -51,6 +56,7 @@ public class PollsController : ControllerBase
         return Ok(pollCreationDateDto);
     }
 
+    [Authorize]
     [HttpGet("{id}/results")]
     public async Task<ActionResult<PollResultsDto>> GetPollResultsById(int id)
     {
@@ -62,6 +68,7 @@ public class PollsController : ControllerBase
 
     #region Create
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<PollDto>> Create(CreatePollDto
         createPollDto)
@@ -79,6 +86,7 @@ public class PollsController : ControllerBase
 
     #region UpdatePoll
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<ActionResult<PollDto>> UpdatePoll(int id, UpdatePollDto? pollIn)
     {
@@ -97,6 +105,7 @@ public class PollsController : ControllerBase
 
     #region Delete
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(int id)
     {

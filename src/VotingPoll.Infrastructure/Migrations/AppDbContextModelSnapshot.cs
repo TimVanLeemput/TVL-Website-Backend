@@ -3,7 +3,6 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VotingPoll.Infrastructure.Data;
 
@@ -12,11 +11,9 @@ using VotingPoll.Infrastructure.Data;
 namespace VotingPoll.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260207145416_1232")]
-    partial class _1232
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,9 +29,6 @@ namespace VotingPoll.API.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("ClosesAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -82,6 +76,65 @@ namespace VotingPoll.API.Migrations
                         });
                 });
 
+            modelBuilder.Entity("VotingPoll.Core.Entities.Authentication.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("VotingPoll.Core.Entities.Authentication.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("VotingPoll.Core.Entities.Poll", b =>
                 {
                     b.Property<int>("Id")
@@ -99,9 +152,6 @@ namespace VotingPoll.API.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TotalVotes")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("Polls");
@@ -111,8 +161,7 @@ namespace VotingPoll.API.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "What's your favorite color?",
-                            TotalVotes = 0
+                            Title = "What's your favorite color?"
                         });
                 });
 
@@ -158,6 +207,17 @@ namespace VotingPoll.API.Migrations
                     b.Navigation("Poll");
                 });
 
+            modelBuilder.Entity("VotingPoll.Core.Entities.Authentication.RefreshToken", b =>
+                {
+                    b.HasOne("VotingPoll.Core.Entities.Authentication.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("VotingPoll.Core.Entities.Vote", b =>
                 {
                     b.HasOne("VotingPoll.Core.Entities.Poll", "Poll")
@@ -169,7 +229,7 @@ namespace VotingPoll.API.Migrations
                     b.HasOne("PollOption", "PollOption")
                         .WithMany("AllVotes")
                         .HasForeignKey("PollOptionId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Poll");
@@ -180,6 +240,11 @@ namespace VotingPoll.API.Migrations
             modelBuilder.Entity("PollOption", b =>
                 {
                     b.Navigation("AllVotes");
+                });
+
+            modelBuilder.Entity("VotingPoll.Core.Entities.Authentication.User", b =>
+                {
+                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("VotingPoll.Core.Entities.Poll", b =>

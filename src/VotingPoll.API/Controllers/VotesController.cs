@@ -1,4 +1,5 @@
 ﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
 using VotingPoll.Core.Models;
@@ -24,6 +25,7 @@ public class VotesController : ControllerBase
 
     #region GET
 
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<PagedList<VoteDto>>> GetAllVotesForPoll(int pollId, int? page = null, int? pageSize = null)
     {
@@ -31,7 +33,8 @@ public class VotesController : ControllerBase
 
         return Ok(votesDto);
     }
-
+    
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<VoteDto>?> GetById(int id)
     {
@@ -43,7 +46,7 @@ public class VotesController : ControllerBase
     #endregion
 
     #region POST
-
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<VoteConfirmationDto>> Create(int pollId, CreateVoteDto createVoteDto)
     {

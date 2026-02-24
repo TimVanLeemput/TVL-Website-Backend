@@ -1,4 +1,5 @@
 ﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VotingPoll.Core.Exceptions;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
@@ -26,6 +27,7 @@ public class PollOptionsController : ControllerBase
 
     #region GET
 
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<List<PollOptionDto>>> GetAllOptionsForPoll(int pollId)
     {
@@ -34,6 +36,7 @@ public class PollOptionsController : ControllerBase
         return Ok(pollOptionsDto);
     }
 
+    [Authorize]
     [HttpGet("{pollOptionId}")]
     public async Task<ActionResult<PollOptionDto>> GetPollOption(int pollId, int pollOptionId)
     {
@@ -45,6 +48,7 @@ public class PollOptionsController : ControllerBase
 
     #region POST
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<PollOptionDto>> CreatePollOption(int pollId, CreatePollOptionDto createPollOptionDto)
     {
@@ -60,6 +64,7 @@ public class PollOptionsController : ControllerBase
 
     #region Delete
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{pollOptionId}")]
     public async Task<ActionResult> DeletePollOption(int pollId, int pollOptionId)
     {

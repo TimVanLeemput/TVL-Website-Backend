@@ -528,3 +528,4 @@ C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Tests
 C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Tests\obj\Debug\net10.0\VotingPoll.Tests.pdb
 C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Tests\obj\Debug\net10.0\VotingPoll.Tests.genruntimeconfig.cache
 C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Tests\obj\Debug\net10.0\ref\VotingPoll.Tests.dll
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\VotingPoll.Tests\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

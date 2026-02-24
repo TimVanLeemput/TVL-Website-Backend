@@ -7,6 +7,6 @@ public class CreatePollOptionDtoValidator : AbstractValidator<CreatePollOptionDt
 {
     public CreatePollOptionDtoValidator()
     {
-        RuleFor(x => x.PollOptionName).NotEmpty().WithMessage("A poll option name is required");
+        RuleFor(x => x.PollOptionName).NotEmpty().NotNull().WithMessage("A poll option name is required");
     }
 }

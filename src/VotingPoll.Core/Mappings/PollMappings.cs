@@ -96,7 +96,7 @@ public static class PollMappings
                 Id = options.Id,
                 PollOptionName = options.PollOptionName,
                 PollId = options.PollId,
-                TotalVotes = options.AllVotes.Count,
+                TotalVotes = options.AllVotes?.Count ?? 0,
                 VotesPercentage = totalVotes > 0 ? Math.Round((double)options.AllVotes.Count / totalVotes * 100, 1) : 0,
                 CreatedAt = options.CreatedAt
             }).ToList();
