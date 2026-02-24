@@ -6,6 +6,9 @@
 //4. Run                   (app.Run())
 
 using System.Text;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
@@ -16,7 +19,10 @@ using VotingPoll.API.Middleware;
 using VotingPoll.Core.Interfaces.Authentication;
 using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
+using VotingPoll.Core.Interfaces.ServicesInterfaces.Authentication;
 using VotingPoll.Core.Services;
+using VotingPoll.Core.Services.Authentication;
+using VotingPoll.Core.Services.Authentication.Token;
 using VotingPoll.Infrastructure.Data;
 using VotingPoll.Infrastructure.Repositories;
 using VotingPoll.Infrastructure.Validation;
@@ -40,7 +46,8 @@ builder.Services.AddScoped<IVoteRepository, VoteRepository>();
 
 #region Custom Services
 
-builder.Services.AddScoped<IAuthService, IAuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<IVotingService, VotingService>();
 builder.Services.AddScoped<IPollService, PollService>();
@@ -71,9 +78,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,           // enforce the iss claim
-            ValidateAudience = true,         // enforce the aud claim
-            ValidateLifetime = true,         // enforce exp claim (rejects expired tokens)
+            ValidateIssuer = true, // enforce the iss claim
+            ValidateAudience = true, // enforce the aud claim
+            ValidateLifetime = true, // enforce exp claim (rejects expired tokens)
             ValidateIssuerSigningKey = true, // enforce signature validation
 
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
@@ -83,6 +90,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddAuthorization();
+
+#region Azure
+
+string keyVaultUri = builder.Configuration["KeyVaultUrl"];
+SecretClient secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
+builder.Configuration.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
+#endregion
 
 #endregion
 

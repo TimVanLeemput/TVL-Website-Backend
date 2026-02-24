@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "PAELbF3+3LE=",
+  "dgSpecHash": "hV34s3fGXP4=",
   "success": true,
   "projectFilePath": "C:\\Users\\vanle\\Documents\\GitHub\\Website\\TVL-Website-Backend\\src\\VotingPoll.Infrastructure\\VotingPoll.Infrastructure.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,8 @@
     "C:\\Users\\vanle\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512",
     "C:\\Users\\vanle\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\12.1.1\\fluentvalidation.dependencyinjectionextensions.12.1.1.nupkg.sha512",
     "C:\\Users\\vanle\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
+    "C:\\Users\\vanle\\.nuget\\packages\\konscious.security.cryptography.argon2\\1.3.1\\konscious.security.cryptography.argon2.1.3.1.nupkg.sha512",
+    "C:\\Users\\vanle\\.nuget\\packages\\konscious.security.cryptography.blake2\\1.1.1\\konscious.security.cryptography.blake2.1.1.1.nupkg.sha512",
     "C:\\Users\\vanle\\.nuget\\packages\\microsoft.aspnetcore.antiforgery\\2.3.0\\microsoft.aspnetcore.antiforgery.2.3.0.nupkg.sha512",
     "C:\\Users\\vanle\\.nuget\\packages\\microsoft.aspnetcore.authentication.abstractions\\2.3.0\\microsoft.aspnetcore.authentication.abstractions.2.3.0.nupkg.sha512",
     "C:\\Users\\vanle\\.nuget\\packages\\microsoft.aspnetcore.authentication.core\\2.3.0\\microsoft.aspnetcore.authentication.core.2.3.0.nupkg.sha512",

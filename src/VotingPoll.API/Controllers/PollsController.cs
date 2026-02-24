@@ -31,7 +31,6 @@ public class PollsController : ControllerBase
 
     #region GET
 
-    [Authorize]
     [HttpGet]
     public async Task<ActionResult<PagedList<PollDto>>> GetAll([FromQuery] bool? isOpen = null, int? page = null,
         int? pageSize = null)

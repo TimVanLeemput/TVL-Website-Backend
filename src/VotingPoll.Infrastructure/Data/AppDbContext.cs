@@ -31,8 +31,12 @@ public class AppDbContext : DbContext
             .HasForeignKey(v => v.PollOptionId)
             .OnDelete(DeleteBehavior.Cascade);
 
-
+        modelBuilder.Entity<User>().HasMany(u => u.RefreshTokens).WithOne(rt => rt.User)
+            .OnDelete(DeleteBehavior.Cascade);
         
+        modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
+
+
         // Seed data
         modelBuilder.Entity<Poll>().HasData(
             new Poll { Id = 1, Title = "What's your favorite color?", CreatedAt = new DateTime(2025, 1, 1) }
@@ -47,6 +51,6 @@ public class AppDbContext : DbContext
         // Index
         // -- "For the Vote table, create an index on the combination of PollId and
         //     UserId, and make sure that combination is unique - no duplicates allowed. This also improved query performance" -- 
-        modelBuilder.Entity<Vote>().HasIndex(v => new {v.PollId, v.UserId }).IsUnique();
+        modelBuilder.Entity<Vote>().HasIndex(v => new { v.PollId, v.UserId }).IsUnique();
     }
 }
