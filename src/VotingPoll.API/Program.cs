@@ -71,10 +71,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
+            ValidateIssuer = true,           // enforce the iss claim
+            ValidateAudience = true,         // enforce the aud claim
+            ValidateLifetime = true,         // enforce exp claim (rejects expired tokens)
+            ValidateIssuerSigningKey = true, // enforce signature validation
+
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(

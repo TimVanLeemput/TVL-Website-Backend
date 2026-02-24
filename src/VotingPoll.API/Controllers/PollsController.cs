@@ -70,7 +70,7 @@ public class PollsController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<ActionResult<PollDto>> Create(CreatePollDto
+    public async Task<ActionResult<PollDto>> Create([FromBody] CreatePollDto
         createPollDto)
     {
         ValidationResult validationResult = await _createPollDtoValidator.ValidateAsync(createPollDto);
