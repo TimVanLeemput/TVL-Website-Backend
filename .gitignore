@@ -1,2 +1,9 @@
 /.claude
+AGENTS.md
+
+# Build output
+bin/
+obj/
+
+# Sensitive config
 src/VotingPoll.API/bin/Debug/net10.0/appsettings.Development.json
