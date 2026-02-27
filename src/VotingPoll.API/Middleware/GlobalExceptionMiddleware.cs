@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VotingPoll.Core.Exceptions;
+using VotingPoll.Core.Exceptions.AuthExceptions;
 
 namespace VotingPoll.API.Middleware;
 
@@ -21,6 +22,9 @@ public class GlobalExceptionMiddleware
         {
             await _next(context); // waits for the whole pipeline to complete
         }
+
+        #region PollExceptions
+
         catch (PollNotFoundException ex)
         {
             context.Response.StatusCode = 404;
@@ -88,6 +92,31 @@ public class GlobalExceptionMiddleware
                 }
             );
         }
+
+        #endregion
+
+        #region AuthExceptions
+
+        catch (EmailAlreadyExistsException ex)
+        {
+            context.Response.StatusCode = 409;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                error = ex.Message,
+                email = ex.Email
+            });
+        }
+        catch (InvalidCredentialsException ex)
+        {
+            context.Response.StatusCode = 404;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                error = ex.Message,
+            });
+        }
+
+        #endregion
+
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception");

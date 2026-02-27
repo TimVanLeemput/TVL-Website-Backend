@@ -1,7 +1,7 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Identity.Data;
+﻿using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using VotingPoll.Core.Interfaces.Authentication;
+using VotingPoll.Core.Models.DTOs.Authentication;
 
 namespace VotingPoll.API.Controllers.Authentication;
 
@@ -17,34 +17,23 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<AuthResponse>> RegisterAsync(RegisterRequest request)
+    public async Task<ActionResult<AuthDto.AuthResponse>> RegisterAsync(RegisterRequest request)
     {
-        string? userIdString = User.FindFirst(ClaimTypes
-            .NameIdentifier)?.Value;
-        int userId = int.Parse(userIdString!);
-
-// Check role
-        bool isAdmin = User.IsInRole("Admin");
-
-// Get email
-        string? email = User.FindFirst(ClaimTypes.Email)?.Value;
-        
-        
-        AuthResponse response = await _authService.RegisterAsync(request);
+        AuthDto.AuthResponse response = await _authService.RegisterAsync(request);
         return Ok(response);
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
+    public async Task<ActionResult<AuthDto.AuthResponse>> Login(LoginRequest request)
     {
-        AuthResponse response = await _authService.LoginAsync(request);
+        AuthDto.AuthResponse response = await _authService.LoginAsync(request);
         return Ok(response);
     }
 
     [HttpPost("refresh")]
-    public async Task<ActionResult<AuthResponse>> Refresh(RefreshRequest request)
+    public async Task<ActionResult<AuthDto.AuthResponse>> Refresh(AuthDto.RefreshTokenRequestDto refreshTokenRequestDto)
     {
-        AuthResponse response = await _authService.RefreshTokenAsync(request.RefreshToken);
+        AuthDto.AuthResponse response = await _authService.RefreshTokenAsync(refreshTokenRequestDto.RefreshToken);
         return Ok(response);
     }
 }

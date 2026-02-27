@@ -4,11 +4,12 @@ namespace VotingPoll.Core.Interfaces.Repositories.Authentication;
 
 public interface IUserRepository
 {
-    public Task<User> GetUserById(int id);
-    public Task<User?> GetUserByEmail(string email);
-    public Task<User> CreateUser(User user);
-    public Task<bool> Exists(int id);
-    public Task<bool> Exists(string email);
-    public Task UpdateUser();
-    public Task DeleteUser(int id);
+    public Task<User> GetUserByIdAsync(int id);
+    public Task<User?> GetUserByEmailAsync(string email);
+    public Task<User?> GetUserByRefreshTokenAsync(string? refreshTokenString);
+    public Task<User> CreateUserAsync(User user);
+    public Task<bool> ExistsAsync(int id);
+    public Task<bool> ExistsAsync(string email);
+    public Task UpdateUserAsync();
+    public Task DeleteUserAsync(int id);
 }

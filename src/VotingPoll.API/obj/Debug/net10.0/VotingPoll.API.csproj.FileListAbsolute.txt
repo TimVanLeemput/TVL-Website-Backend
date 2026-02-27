@@ -173,3 +173,5 @@ C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\votingpoll.api\b
 C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\votingpoll.api\bin\Debug\net10.0\runtimes\win-arm64\native\msalruntime_arm64.dll
 C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\votingpoll.api\bin\Debug\net10.0\runtimes\win-x64\native\msalruntime.dll
 C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\votingpoll.api\bin\Debug\net10.0\runtimes\win-x86\native\msalruntime_x86.dll
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\votingpoll.api\bin\Debug\net10.0\Konscious.Security.Cryptography.Argon2.dll
+C:\Users\vanle\Documents\GitHub\Website\TVL-Website-Backend\src\votingpoll.api\bin\Debug\net10.0\Konscious.Security.Cryptography.Blake2.dll

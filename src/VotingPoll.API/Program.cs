@@ -18,6 +18,7 @@ using VotingPoll.API.Controllers.Authentication;
 using VotingPoll.API.Middleware;
 using VotingPoll.Core.Interfaces.Authentication;
 using VotingPoll.Core.Interfaces.Repositories;
+using VotingPoll.Core.Interfaces.Repositories.Authentication;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
 using VotingPoll.Core.Interfaces.ServicesInterfaces.Authentication;
 using VotingPoll.Core.Services;
@@ -25,6 +26,7 @@ using VotingPoll.Core.Services.Authentication;
 using VotingPoll.Core.Services.Authentication.Token;
 using VotingPoll.Infrastructure.Data;
 using VotingPoll.Infrastructure.Repositories;
+using VotingPoll.Infrastructure.Repositories.Authentication;
 using VotingPoll.Infrastructure.Validation;
 
 // --------------------------------------------------------APP CONTAINER / SETUP--------------------------------------
@@ -38,6 +40,9 @@ builder.Services.AddEndpointsApiExplorer();
 
 #region Repositories
 
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreskTokenRepository>();
+
 builder.Services.AddScoped<IPollRepository, PollRepository>();
 builder.Services.AddScoped<IPollOptionRepository, PollOptionRepository>();
 builder.Services.AddScoped<IVoteRepository, VoteRepository>();
@@ -45,7 +50,7 @@ builder.Services.AddScoped<IVoteRepository, VoteRepository>();
 #endregion
 
 #region Custom Services
-
+//
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
@@ -66,8 +71,16 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreatePollDtoValidator>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration
             .GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("VotingPoll.API"))
+        b => b.MigrationsAssembly("VotingPoll.Infrastructure"))
 );
+
+#endregion
+
+#region Azure
+
+string keyVaultUri = builder.Configuration["KeyVaultUrl"];
+SecretClient secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
+builder.Configuration.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
 
 #endregion
 
@@ -91,12 +104,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
-#region Azure
 
-string keyVaultUri = builder.Configuration["KeyVaultUrl"];
-SecretClient secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
-builder.Configuration.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
-#endregion
 
 #endregion
 

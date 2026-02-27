@@ -9,6 +9,6 @@ public interface IAuthService
 
     public Task<AuthDto.AuthResponse> LoginAsync(LoginRequest request);
 
-    public Task<AuthDto.AuthResponse> RefreshTokenAsync(string refreshToken);
+    public Task<AuthDto.AuthResponse> RefreshTokenAsync(string refreshTokenString);
 }
 
