@@ -41,7 +41,7 @@ builder.Services.AddEndpointsApiExplorer();
 #region Repositories
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IRefreshTokenRepository, RefreskTokenRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 builder.Services.AddScoped<IPollRepository, PollRepository>();
 builder.Services.AddScoped<IPollOptionRepository, PollOptionRepository>();

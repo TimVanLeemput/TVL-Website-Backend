@@ -5,11 +5,11 @@ using VotingPoll.Infrastructure.Data;
 
 namespace VotingPoll.Infrastructure.Repositories.Authentication;
 
-public class RefreskTokenRepository : IRefreshTokenRepository
+public class RefreshTokenRepository : IRefreshTokenRepository
 {
     private AppDbContext _context;
 
-    public RefreskTokenRepository(AppDbContext context)
+    public RefreshTokenRepository(AppDbContext context)
     {
         _context = context;
     }
