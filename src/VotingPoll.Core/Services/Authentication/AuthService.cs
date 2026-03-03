@@ -30,20 +30,13 @@ public class AuthService : IAuthService
 
     public async Task<AuthDto.AuthResponse> RegisterAsync(RegisterRequest request)
     {
-        //todo
-        // 3. Hash password with cryptography
-        // 4. Create and save User
-        // 5. Generate tokens
-        // 6. Save RefreshToken
-        // 7. Return AuthResponse
-
         //Check duplicate email
         if (_userRepository.ExistsAsync(request.Email).Result)
         {
             throw new EmailAlreadyExistsException($"{request.Email}");
         }
 
-        // var argon2 = new Argon2i();
+        // Cryptography
         string passWord = request.Password;
         byte[] salt = CryptographyHelper.GenerateSalt(16);
         byte[] hashedPassword = CryptographyHelper.HashPassword(passWord, salt);
@@ -54,7 +47,7 @@ public class AuthService : IAuthService
             Id = 0,
             Email = request.Email,
             PasswordHash = hashedPassword,
-            Role = "User",
+            Role = Role.User,
             CreatedAt = DateTime.UtcNow,
             RefreshTokens = new List<RefreshToken>()
         };

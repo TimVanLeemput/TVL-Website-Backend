@@ -39,7 +39,7 @@ public class VotingServiceTests
 
         // Act & Assert
         await Assert.ThrowsAsync<PollNotFoundException>(() =>
-            _sut.Create(999, new CreateVoteDto() { PollOptionId = 1, UserId = "user1" }));
+            _sut.Create(999, new CreateVoteDto() { PollOptionId = 1, UserId = 1 }));
         
         _voteRepoMock.Verify(r => r.CreateAsync(It.IsAny<Vote>()), Times.Never);
     }
@@ -61,12 +61,12 @@ public class VotingServiceTests
 
         _pollRepoMock.Setup(r => r.GetByIdAsync(1))
             .ReturnsAsync(poll);
-        _voteRepoMock.Setup(r => r.UserAlreadyVotedAsync(1, "user1"))
+        _voteRepoMock.Setup(r => r.UserAlreadyVotedAsync(1, 1))
             .ReturnsAsync(true);
 
         // Act & Assert
         await Assert.ThrowsAsync<AlreadyVotedException>(() =>
-            _sut.Create(1, new CreateVoteDto() { PollOptionId = 1, UserId = "user1" }));
+            _sut.Create(1, new CreateVoteDto() { PollOptionId = 1, UserId = 1 }));
     }
 
     [Fact]
@@ -86,22 +86,23 @@ public class VotingServiceTests
         };
         _pollRepoMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(poll);
         _pollOptionRepoMock.Setup(r => r.GetAsync(1, 1)).ReturnsAsync(pollOption); // Added this line 
-        _voteRepoMock.Setup(r => r.UserAlreadyVotedAsync(1, "user1")).ReturnsAsync(false);
+        _voteRepoMock.Setup(r => r.UserAlreadyVotedAsync(1, 1)).ReturnsAsync(false);
         _voteRepoMock.Setup(r => r.CreateAsync(It.IsAny<Vote>()))
             .ReturnsAsync((Vote v) => v);
 
         // Act
-        VoteConfirmationDto result = await _sut.Create(1, new CreateVoteDto() { PollOptionId = 1, UserId = "user1" });
+        VoteConfirmationDto result = await _sut.Create(1, new CreateVoteDto() { PollOptionId = 1, UserId = 1 });
 
         // Assert
         Assert.Equal("Test Poll", result.PollTitle);
         Assert.Equal("Option A", result.PollOptionName);
         _voteRepoMock.Verify(r => r.CreateAsync(It.Is<Vote>(v =>
-            v.PollId == 1 && v.PollOptionId == 1 && v.UserId == "user1")), Times.Once);
+            v.PollId == 1 && v.PollOptionId == 1 && v.UserId == 1)), Times.Once);
     }
 
 
     [Fact]
+    
     public async Task CreateVotes_ValidVotes_CreatesVoteAndReturnPercentage()
     {
         // Arrange
@@ -126,22 +127,22 @@ public class VotingServiceTests
         _pollRepoMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(poll);
         _pollOptionRepoMock.Setup(r => r.GetAsync(1, 1)).ReturnsAsync(pollOptions.First); // Added this line 
         _pollOptionRepoMock.Setup(r => r.GetAsync(1, 2)).ReturnsAsync(pollOptions[1]); // Added this line 
-        _voteRepoMock.Setup(r => r.UserAlreadyVotedAsync(1, "user1")).ReturnsAsync(false);
+        _voteRepoMock.Setup(r => r.UserAlreadyVotedAsync(1, 1)).ReturnsAsync(false);
         _voteRepoMock.Setup(r => r.CreateAsync(It.IsAny<Vote>()))
             .ReturnsAsync((Vote v) => v);
 
         // Act
-        VoteConfirmationDto result1 = await _sut.Create(1, new CreateVoteDto() { PollOptionId = 1, UserId = "user1" });
-        VoteConfirmationDto result2 = await _sut.Create(1, new CreateVoteDto() { PollOptionId = 2, UserId = "user2" });
+        VoteConfirmationDto result1 = await _sut.Create(1, new CreateVoteDto() { PollOptionId = 1, UserId = 1 });
+        VoteConfirmationDto result2 = await _sut.Create(1, new CreateVoteDto() { PollOptionId = 2, UserId = 1 });
 
         // Assert
         Assert.Equal("Test Poll", result1.PollTitle);
         Assert.Equal("Option A", result1.PollOptionName);
         Assert.Equal("Option B", result2.PollOptionName);
         _voteRepoMock.Verify(r => r.CreateAsync(It.Is<Vote>(v =>
-            v.PollId == 1 && v.PollOptionId == 1 && v.UserId == "user1")));
+            v.PollId == 1 && v.PollOptionId == 1 && v.UserId == 1)));
         _voteRepoMock.Verify(r => r.CreateAsync(It.Is<Vote>(v =>
-            v.PollId == 1 && v.PollOptionId == 2 && v.UserId == "user2")));
+            v.PollId == 1 && v.PollOptionId == 2 && v.UserId == 1)));
     }
 
 
@@ -157,7 +158,7 @@ public class VotingServiceTests
 
         _pollRepoMock.Setup(rule => rule.GetByIdAsync(1)).ReturnsAsync((poll));
         await Assert.ThrowsAsync<PollClosedException>(() =>
-            _sut.Create(1, new CreateVoteDto { PollOptionId = 1, UserId = "user1" }));
+            _sut.Create(1, new CreateVoteDto { PollOptionId = 1, UserId = 1 }));
     }
 
     [Fact]
@@ -177,7 +178,7 @@ public class VotingServiceTests
         _pollRepoMock.Setup(rule => rule.GetByIdAsync(1)).ReturnsAsync(poll);
 
         await Assert.ThrowsAsync<InvalidPollOptionException>(() =>
-            _sut.Create(1, new CreateVoteDto { PollOptionId = 2, UserId = "user1" }));
+            _sut.Create(1, new CreateVoteDto { PollOptionId = 2, UserId = 1 }));
     }
 
     [Fact]
@@ -197,6 +198,6 @@ public class VotingServiceTests
         _pollRepoMock.Setup(rule => rule.GetByIdAsync(1)).ReturnsAsync(poll);
 
         await Assert.ThrowsAsync<InvalidPollOptionException>(() =>
-            _sut.Create(1, new CreateVoteDto { UserId = "user1" }));
+            _sut.Create(1, new CreateVoteDto { UserId = 1 }));
     }
 }

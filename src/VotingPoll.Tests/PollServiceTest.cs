@@ -32,13 +32,13 @@ public class PollServiceTest
                 {
                     Id = 1,
                     PollOptionName = "Option A",
-                    AllVotes = new List<Vote> { new Vote{UserId = "user1"}, new Vote{UserId="user2"}, new Vote{UserId="user2"} } // 3 votes
+                    AllVotes = new List<Vote> { new Vote { UserId = 0 }, new Vote { UserId = 1 }, new Vote { UserId = 2 } } // 3 votes
                 },
                 new PollOption
                 {
                     Id = 2,
                     PollOptionName = "Option B",
-                    AllVotes = new List<Vote> { new Vote{UserId="user4"} } // 1 vote
+                    AllVotes = new List<Vote> { new Vote { UserId = 3 } } // 1 vote
                 }
             }
         };

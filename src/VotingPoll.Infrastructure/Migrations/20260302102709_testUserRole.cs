@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VotingPoll.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class testUserRole : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -96,7 +96,7 @@ namespace VotingPoll.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PollOptionId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true),
                     VotedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PollId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -113,6 +113,11 @@ namespace VotingPoll.Infrastructure.Migrations
                         name: "FK_Votes_Polls_PollId",
                         column: x => x.PollId,
                         principalTable: "Polls",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Votes_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
@@ -158,6 +163,11 @@ namespace VotingPoll.Infrastructure.Migrations
                 name: "IX_Votes_PollOptionId",
                 table: "Votes",
                 column: "PollOptionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Votes_UserId",
+                table: "Votes",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -170,10 +180,10 @@ namespace VotingPoll.Infrastructure.Migrations
                 name: "Votes");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "PollOptions");
 
             migrationBuilder.DropTable(
-                name: "PollOptions");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Polls");

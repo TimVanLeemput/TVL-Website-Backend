@@ -12,8 +12,8 @@ using VotingPoll.Infrastructure.Data;
 namespace VotingPoll.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260226102211_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260302102709_testUserRole")]
+    partial class testUserRole
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -185,8 +185,8 @@ namespace VotingPoll.Infrastructure.Migrations
                     b.Property<int>("PollOptionId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("VotedAt")
                         .HasColumnType("datetime2");
@@ -194,6 +194,8 @@ namespace VotingPoll.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PollOptionId");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("PollId", "UserId")
                         .IsUnique()
@@ -238,9 +240,15 @@ namespace VotingPoll.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("VotingPoll.Core.Entities.Authentication.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
                     b.Navigation("Poll");
 
                     b.Navigation("PollOption");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PollOption", b =>

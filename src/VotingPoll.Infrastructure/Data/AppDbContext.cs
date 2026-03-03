@@ -33,9 +33,11 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<User>().HasMany(u => u.RefreshTokens).WithOne(rt => rt.User)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
 
+        modelBuilder.Entity<User>().Property(r => r.Role)
+            .HasConversion<string>(); // Allows enum string to be foldout as enum
 
         // Seed data
         modelBuilder.Entity<Poll>().HasData(
