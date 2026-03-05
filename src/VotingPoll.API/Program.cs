@@ -6,6 +6,7 @@
 //4. Run                   (app.Run())
 
 using System.Text;
+using System.Threading.RateLimiting;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
@@ -113,7 +114,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 #endregion
 
-
 #region Authentication
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -138,8 +138,25 @@ builder.Services.AddAuthorization();
 
 #region Health Checks
 
-builder.Services.AddHealthChecks();
 builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>("DB Health Check");
+
+#endregion
+
+#region Security
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 10,
+                QueueLimit = 0,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+});
 
 #endregion
 
@@ -162,6 +179,8 @@ app.UseAuthorization(); // Checks if a User has access to the endpoint ([Authori
 app.MapControllers();
 
 app.MapHealthChecks("/health");
+
+app.UseRateLimiter();
 
 #endregion
 
