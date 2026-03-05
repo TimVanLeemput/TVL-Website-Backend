@@ -136,6 +136,13 @@ builder.Services.AddAuthorization();
 
 #endregion
 
+#region Health Checks
+
+builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>("DB Health Check");
+
+#endregion
+
 #endregion
 
 WebApplication app = builder.Build();
@@ -154,5 +161,8 @@ app.UseAuthorization(); // Checks if a User has access to the endpoint ([Authori
 
 app.MapControllers();
 
+app.MapHealthChecks("/health");
+
 #endregion
+
 app.Run();
