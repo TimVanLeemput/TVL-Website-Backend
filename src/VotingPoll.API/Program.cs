@@ -11,10 +11,8 @@ using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using VotingPoll.API.Controllers.Authentication;
 using VotingPoll.API.Middleware;
 using VotingPoll.Core.Interfaces.Authentication;
 using VotingPoll.Core.Interfaces.Repositories;
@@ -68,15 +66,24 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreatePollDtoValidator>();
 #endregion
 
 #region CORS
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins("https://timvanleemput.com", "http://localhost:5000")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
+
+#endregion
+
+#region Azure
+
+string keyVaultUri = builder.Configuration["KeyVaultUrl"];
+SecretClient secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
+builder.Configuration.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
 
 #endregion
 
@@ -87,7 +94,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     {
         if (databaseProvider == "PostgreSQL")
         {
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+            options.UseNpgsql(builder.Configuration["Neon:ConnectionString"],
                 b => b.MigrationsAssembly("VotingPoll.Infrastructure"));
         }
         else
@@ -101,13 +108,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 #endregion
 
-#region Azure
-
-string keyVaultUri = builder.Configuration["KeyVaultUrl"];
-SecretClient secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
-builder.Configuration.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
-
-#endregion
 
 #region Authentication
 
