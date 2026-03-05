@@ -33,6 +33,8 @@ using VotingPoll.Infrastructure.Validation;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -81,7 +83,7 @@ builder.Services.AddCors(options =>
 
 #region Azure
 
-string keyVaultUri = builder.Configuration["KeyVaultUrl"];
+string keyVaultUri = builder.Configuration["KeyVaultUrl"]; // Empty on Railway
 if (!string.IsNullOrEmpty(keyVaultUri))
 {
     SecretClient secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
@@ -97,7 +99,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     {
         if (databaseProvider == "PostgreSQL")
         {
-            options.UseNpgsql(builder.Configuration["Neon__ConnectionString"],
+            options.UseNpgsql(builder.Configuration["Neon__ConnectionString"], // -- to redeploy in dev env
                 b => b.MigrationsAssembly("VotingPoll.Infrastructure"));
         }
         else
@@ -153,5 +155,4 @@ app.UseAuthorization(); // Checks if a User has access to the endpoint ([Authori
 app.MapControllers();
 
 #endregion
-
 app.Run();
