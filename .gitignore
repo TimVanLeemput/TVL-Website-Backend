@@ -7,3 +7,4 @@ obj/
 
 # Sensitive config
 src/VotingPoll.API/bin/Debug/net10.0/appsettings.Development.json
+.idea/.idea.VotingPoll/.idea/indexLayout.xml
