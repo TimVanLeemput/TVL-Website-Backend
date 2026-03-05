@@ -1,3 +1,6 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Build and deploy ASP.Net Core app to Azure Web App - TVL-Website
 
 on:
@@ -8,9 +11,9 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
-      contents: read
+      contents: read #This is required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
@@ -21,10 +24,10 @@ jobs:
           dotnet-version: '10.x'
 
       - name: Build with dotnet
-        run: dotnet build src/VotingPoll.API/VotingPoll.API.csproj --configuration Release
+        run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish src/VotingPoll.API/VotingPoll.API.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -33,24 +36,24 @@ jobs:
           path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build
     permissions:
-      id-token: write
-      contents: read
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-
+      
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9842AD70A7A64807ACEA46CA06F94080 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A2BE480C93E14746A41DCC56F83097F1 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_9030109E118943FDB059DFA79FBC2004 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_64C302FFE2BA4CC8BEEF9C0FF211BF6B }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_4F580A760A424747A1E00629B6EF033F }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4657D99DD45C446794A4E073FA8230AA }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -59,3 +62,4 @@ jobs:
           app-name: 'TVL-Website'
           slot-name: 'Production'
           package: .
+          
