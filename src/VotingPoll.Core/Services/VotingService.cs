@@ -47,6 +47,7 @@ public class VotingService : IVotingService
         return pagedListOfVotesDto;
     }
 
+    // todo WE HAVE TO MAKE CREATE VOTE USE THE USER DIRECTLY AND NOT USER ID STRING
     public async Task<VoteConfirmationDto> Create(int pollId, CreateVoteDto createVoteDto)
     {
         Poll? poll = await _pollRepository.GetByIdAsync(pollId);
