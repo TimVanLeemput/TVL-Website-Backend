@@ -94,7 +94,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     {
         if (databaseProvider == "PostgreSQL")
         {
-            options.UseNpgsql(builder.Configuration["Neon:ConnectionString"],
+            options.UseNpgsql(builder.Configuration["Neon__ConnectionString"],
                 b => b.MigrationsAssembly("VotingPoll.Infrastructure"));
         }
         else
