@@ -5,13 +5,13 @@ namespace VotingPoll.Core.Mappings;
 
 public static class VoteMapping
 {
-    public static Vote ToEntity(this CreateVoteDto createVoteDto, int pollId)
+    public static Vote ToEntity(this CreateVoteDto createVoteDto, int userId, int pollId)
     {
         Vote vote = new Vote
         {
             PollId = pollId,
             PollOptionId = createVoteDto.PollOptionId,
-            UserId = createVoteDto.UserId,
+            UserId = userId,
             VotedAt = DateTime.UtcNow,
         };
         return vote;

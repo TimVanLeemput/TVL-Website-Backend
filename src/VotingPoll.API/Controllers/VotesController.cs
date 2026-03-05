@@ -1,4 +1,5 @@
-﻿using FluentValidation.Results;
+﻿using System.Security.Claims;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VotingPoll.Core.Interfaces.ServicesInterfaces;
@@ -27,13 +28,14 @@ public class VotesController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<PagedList<VoteDto>>> GetAllVotesForPoll(int pollId, int? page = null, int? pageSize = null)
+    public async Task<ActionResult<PagedList<VoteDto>>> GetAllVotesForPoll(int pollId, int? page = null,
+        int? pageSize = null)
     {
         PagedList<VoteDto> votesDto = await _votingService.GetAllVotesForPoll(pollId, page, pageSize);
 
         return Ok(votesDto);
     }
-    
+
     [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<VoteDto>?> GetById(int id)
@@ -46,6 +48,7 @@ public class VotesController : ControllerBase
     #endregion
 
     #region POST
+
     [Authorize]
     [HttpPost]
     public async Task<ActionResult<VoteConfirmationDto>> Create(int pollId, CreateVoteDto createVoteDto)
@@ -53,8 +56,10 @@ public class VotesController : ControllerBase
         ValidationResult validationResult = await _createVoteRequestValidator.ValidateAsync(createVoteDto);
         if (!validationResult.IsValid)
             return BadRequest(validationResult);
+        string? userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        int userId = int.Parse(userIdClaim!);
 
-        return await _votingService.Create(pollId, createVoteDto);
+        return await _votingService.Create(userId, pollId, createVoteDto);
     }
 
     #endregion

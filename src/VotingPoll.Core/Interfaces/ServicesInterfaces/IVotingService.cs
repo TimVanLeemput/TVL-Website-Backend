@@ -8,5 +8,5 @@ public interface IVotingService
     public Task<VoteDto> GetById(int id);
     public Task<PagedList<VoteDto>> GetAllVotesForPoll(int pollId, int? page = null, int? pageSize = null);
 
-    public Task<VoteConfirmationDto> Create(int pollId, CreateVoteDto createVoteDto);
+    public Task<VoteConfirmationDto> Create(int userId, int pollId, CreateVoteDto createVoteDto);
 }

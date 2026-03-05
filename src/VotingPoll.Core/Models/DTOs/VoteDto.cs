@@ -11,7 +11,6 @@ public class VoteDto
 
 public class CreateVoteDto
 {
-    public int UserId { get; set; }
     public int PollOptionId { get; set; }
 }
 

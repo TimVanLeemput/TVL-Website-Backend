@@ -39,7 +39,7 @@ public class VotingServiceTests
 
         // Act & Assert
         await Assert.ThrowsAsync<PollNotFoundException>(() =>
-            _sut.Create(999, new CreateVoteDto() { PollOptionId = 1, UserId = 1 }));
+            _sut.Create(1, 999, new CreateVoteDto() { PollOptionId = 1 }));
         
         _voteRepoMock.Verify(r => r.CreateAsync(It.IsAny<Vote>()), Times.Never);
     }
@@ -66,7 +66,7 @@ public class VotingServiceTests
 
         // Act & Assert
         await Assert.ThrowsAsync<AlreadyVotedException>(() =>
-            _sut.Create(1, new CreateVoteDto() { PollOptionId = 1, UserId = 1 }));
+            _sut.Create(1, 1, new CreateVoteDto() { PollOptionId = 1 }));
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class VotingServiceTests
             .ReturnsAsync((Vote v) => v);
 
         // Act
-        VoteConfirmationDto result = await _sut.Create(1, new CreateVoteDto() { PollOptionId = 1, UserId = 1 });
+        VoteConfirmationDto result = await _sut.Create(1, 1, new CreateVoteDto() { PollOptionId = 1 });
 
         // Assert
         Assert.Equal("Test Poll", result.PollTitle);
@@ -132,8 +132,8 @@ public class VotingServiceTests
             .ReturnsAsync((Vote v) => v);
 
         // Act
-        VoteConfirmationDto result1 = await _sut.Create(1, new CreateVoteDto() { PollOptionId = 1, UserId = 1 });
-        VoteConfirmationDto result2 = await _sut.Create(1, new CreateVoteDto() { PollOptionId = 2, UserId = 1 });
+        VoteConfirmationDto result1 = await _sut.Create(1, 1, new CreateVoteDto() { PollOptionId = 1 });
+        VoteConfirmationDto result2 = await _sut.Create(1, 1, new CreateVoteDto() { PollOptionId = 2 });
 
         // Assert
         Assert.Equal("Test Poll", result1.PollTitle);
@@ -158,7 +158,7 @@ public class VotingServiceTests
 
         _pollRepoMock.Setup(rule => rule.GetByIdAsync(1)).ReturnsAsync((poll));
         await Assert.ThrowsAsync<PollClosedException>(() =>
-            _sut.Create(1, new CreateVoteDto { PollOptionId = 1, UserId = 1 }));
+            _sut.Create(1, 1, new CreateVoteDto { PollOptionId = 1 }));
     }
 
     [Fact]
@@ -178,7 +178,7 @@ public class VotingServiceTests
         _pollRepoMock.Setup(rule => rule.GetByIdAsync(1)).ReturnsAsync(poll);
 
         await Assert.ThrowsAsync<InvalidPollOptionException>(() =>
-            _sut.Create(1, new CreateVoteDto { PollOptionId = 2, UserId = 1 }));
+            _sut.Create(1, 1, new CreateVoteDto { PollOptionId = 2 }));
     }
 
     [Fact]
@@ -198,6 +198,6 @@ public class VotingServiceTests
         _pollRepoMock.Setup(rule => rule.GetByIdAsync(1)).ReturnsAsync(poll);
 
         await Assert.ThrowsAsync<InvalidPollOptionException>(() =>
-            _sut.Create(1, new CreateVoteDto { UserId = 1 }));
+            _sut.Create(1, 1, new CreateVoteDto()));
     }
 }

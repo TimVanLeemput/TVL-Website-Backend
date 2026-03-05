@@ -47,8 +47,7 @@ public class VotingService : IVotingService
         return pagedListOfVotesDto;
     }
 
-    // todo WE HAVE TO MAKE CREATE VOTE USE THE USER DIRECTLY AND NOT USER ID STRING
-    public async Task<VoteConfirmationDto> Create(int pollId, CreateVoteDto createVoteDto)
+    public async Task<VoteConfirmationDto> Create(int userId, int pollId, CreateVoteDto createVoteDto)
     {
         Poll? poll = await _pollRepository.GetByIdAsync(pollId);
         if (poll == null)
@@ -57,16 +56,16 @@ public class VotingService : IVotingService
         if (poll.ClosesAt < DateTime.UtcNow)
             throw new PollClosedException(pollId);
 
-        bool userAlreadyVoted = await _voteRepository.UserAlreadyVotedAsync(pollId, createVoteDto.UserId);
+        bool userAlreadyVoted = await _voteRepository.UserAlreadyVotedAsync(pollId, userId);
         if (userAlreadyVoted)
-            throw new AlreadyVotedException(createVoteDto.UserId.ToString());
+            throw new AlreadyVotedException(userId.ToString());
 
         PollOption option = await _pollOptionRepository.GetAsync(pollId, createVoteDto.PollOptionId);
         if (option == null)
             throw new InvalidPollOptionException();
 
-        Vote vote = createVoteDto.ToEntity(pollId);
-        _logger.LogInformation($"Created vote for poll with id {pollId}");
+        Vote vote = createVoteDto.ToEntity(userId, pollId);
+        _logger.LogInformation($"Created vote for poll with id: {pollId}, for user with userId: {userId}");
 
         await _voteRepository.CreateAsync(vote);
 
