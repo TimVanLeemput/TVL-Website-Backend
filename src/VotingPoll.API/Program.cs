@@ -99,7 +99,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     {
         if (databaseProvider == "PostgreSQL")
         {
-            options.UseNpgsql(builder.Configuration["Neon__ConnectionString"], // -- to redeploy in dev env
+            options.UseNpgsql(builder.Configuration["Neon:ConnectionString"], // -- to redeploy in dev env
                 b => b.MigrationsAssembly("VotingPoll.Infrastructure"));
         }
         else
