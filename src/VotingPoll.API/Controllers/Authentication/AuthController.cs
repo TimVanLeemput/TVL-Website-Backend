@@ -1,6 +1,7 @@
 ﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using VotingPoll.Core.Entities.Authentication;
 using VotingPoll.Core.Exceptions.AuthExceptions;
 using VotingPoll.Core.Interfaces.Authentication;
 using VotingPoll.Core.Models.DTOs.Authentication;
@@ -53,5 +54,13 @@ public class AuthController : ControllerBase
     {
         AuthDto.AuthResponse response = await _authService.RefreshTokenAsync(refreshTokenRequestDto.RefreshToken);
         return Ok(response);
+    }
+    
+    //todo create revoke dto for User (RevokeUserDto?)
+    [HttpPost("revoke")]
+    public async Task<ActionResult> Revoke(AuthDto.RevokeUserDto revokeUserDto)
+    {
+        AuthDto.RevokeUserDtoResponse revokeUserDtoResponse = await _authService.RevokeRefreshTokenFromUserByEmailAsync(revokeUserDto.Email);
+        return Ok();
     }
 }

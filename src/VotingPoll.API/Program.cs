@@ -50,6 +50,7 @@ builder.Services.AddScoped<IVoteRepository, VoteRepository>();
 #endregion
 
 #region Custom Services
+
 //
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -66,12 +67,36 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreatePollDtoValidator>();
 
 #endregion
 
+#region CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("https://timvanleemput.com", "http://localhost:5000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+#endregion
+
 #region Database Connection
 
+string databaseProvider = builder.Configuration["DatabaseProvider"] ?? "SqlServer";
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration
-            .GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("VotingPoll.Infrastructure"))
+    {
+        if (databaseProvider == "PostgreSQL")
+        {
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly("VotingPoll.Infrastructure"));
+        }
+        else
+        {
+            options.UseSqlServer(builder.Configuration
+                    .GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly("VotingPoll.Infrastructure"));
+        }
+    }
 );
 
 #endregion
@@ -104,8 +129,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
-
-
 #endregion
 
 #endregion
@@ -115,6 +138,8 @@ WebApplication app = builder.Build();
 // -------------------------------------------------APP IS RUNNING AFTER THIS POINT---------------------------------
 
 #region Middleware
+
+app.UseCors("AllowFrontend");
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();

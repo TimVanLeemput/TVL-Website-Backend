@@ -29,5 +29,15 @@ public class AuthDto
     {
         public string RefreshToken { get; set; } = string.Empty;
     }
+    
+    public class RevokeUserDto
+    {
+        public string Email { get; set; } = string.Empty;
+    }
+
+    public class RevokeUserDtoResponse
+    {
+        public string RevokeMessage { get; set; } = string.Empty;
+    }
 
 }

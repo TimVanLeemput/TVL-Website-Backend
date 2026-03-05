@@ -10,5 +10,6 @@ public interface IAuthService
     public Task<AuthDto.AuthResponse> LoginAsync(LoginRequest request);
 
     public Task<AuthDto.AuthResponse> RefreshTokenAsync(string refreshTokenString);
+    public Task<AuthDto.RevokeUserDtoResponse> RevokeRefreshTokenFromUserByEmailAsync(string refreshTokenString);
 }
 

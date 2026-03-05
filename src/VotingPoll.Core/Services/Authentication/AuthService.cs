@@ -123,4 +123,9 @@ public class AuthService : IAuthService
         };
         return await Task.FromResult(authResponse);
     }
+
+    public async Task<AuthDto.RevokeUserDtoResponse> RevokeRefreshTokenFromUserByEmailAsync(string email)
+    {
+        return new AuthDto.RevokeUserDtoResponse();
+    }
 }
