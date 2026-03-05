@@ -62,8 +62,8 @@ public class PollsApiTests : IDisposable
         AppDbContext dbContext = await GetFreshAppDbContextScope();
         await AddPollAndSave(dbContext);
 
-        HttpResponseMessage response = await _client.GetAsync("/api/polls");
-        string content = await response.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await _client.GetAsync("/api/polls", TestContext.Current.CancellationToken);
+        string content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         PagedResponse<PollDto>? result =
             JsonSerializer.Deserialize<PagedResponse<PollDto>>(
                 content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -79,7 +79,7 @@ public class PollsApiTests : IDisposable
     public async Task GetPoll999_ReturnsNotFound(int pollId)
     {
         AppDbContext dbContext = await GetFreshAppDbContextScope();
-        HttpResponseMessage response = await _client.GetAsync($"/api/polls/{pollId}");
+        HttpResponseMessage response = await _client.GetAsync($"/api/polls/{pollId}", TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
