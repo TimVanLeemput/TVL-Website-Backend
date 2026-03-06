@@ -52,7 +52,7 @@ public class AppDbContext : DbContext
             new PollOption { Id = 5, PollOptionName = "Mushrooms", PollId = 1 },
             new PollOption { Id = 6, PollOptionName = "Cats", PollId = 1 }
         );
-
+//
         // Index
         // -- "For the Vote table, create an index on the combination of PollId and
         //     UserId, and make sure that combination is unique - no duplicates allowed. This also improved query performance" -- 
