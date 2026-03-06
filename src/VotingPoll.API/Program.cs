@@ -95,20 +95,20 @@ if (!string.IsNullOrEmpty(keyVaultUri))
 
 #region Database Connection
 
-string databaseProvider = builder.Configuration["DatabaseProvider"] ?? "SqlServer";
+// string databaseProvider = builder.Configuration["DatabaseProvider"] ?? "PostgreSQL-Local";
 builder.Services.AddDbContext<AppDbContext>(options =>
     {
-        if (databaseProvider == "PostgreSQL")
-        {
-            options.UseNpgsql(builder.Configuration["Neon:ConnectionString"], // -- to redeploy in dev env
-                b => b.MigrationsAssembly("VotingPoll.Infrastructure"));
-        }
-        else
-        {
-            options.UseSqlServer(builder.Configuration
-                    .GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly("VotingPoll.Infrastructure"));
-        }
+        options.UseNpgsql(builder.Configuration
+                .GetConnectionString("DefaultConnection"),
+            b => b.MigrationsAssembly("VotingPoll.Infrastructure"));
+        // if (databaseProvider == "PostgreSQL")
+        // {
+        //     options.UseNpgsql(builder.Configuration["Neon:ConnectionString"], // -- to redeploy in dev env
+        //         b => b.MigrationsAssembly("VotingPoll.Infrastructure"));
+        // }
+        // else
+        // {
+        // }
     }
 );
 
@@ -146,9 +146,11 @@ builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>("DB Health Ch
 
 builder.Services.AddRateLimiter(options =>
 {
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
         RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+            partitionKey: httpContext.User.Identity?.Name ??
+                          httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             factory: partition => new FixedWindowRateLimiterOptions
             {
                 AutoReplenishment = true,
@@ -157,6 +159,8 @@ builder.Services.AddRateLimiter(options =>
                 Window = TimeSpan.FromMinutes(1)
             }));
 });
+
+builder.WebHost.ConfigureKestrel(options => { options.Limits.MaxRequestBodySize = 10_240; });
 
 #endregion
 

@@ -1,17 +1,16 @@
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2025-latest
-    container_name: TVL-Website-Backend-SQL-Server
+  postgres:
+    image: postgres:16
+    container_name: TVL-Website-Backend-Postgres
+    command: postgres -c max_connections=300
     environment:
-      MSSQL_SA_PASSWORD: "YourPassword123!"
-      ACCEPT_EULA: "Y"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: YourPassword123!
+      POSTGRES_DB: VotingPollDb
     ports:
-      - "1433:1433"
+      - "5432:5432"
     volumes:
-      - sqlserver_data:/var/opt/mssql
-      - ./init-sql:/init-sql
-    entrypoint: /bin/bash /init-sql/entrypoint.sh
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  
-  sqlserver_data:
+  postgres_data:
