@@ -51,10 +51,12 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_4F580A760A424747A1E00629B6EF033F }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4657D99DD45C446794A4E073FA8230AA }}
 
+      - name: Zip artifact
+        run: zip -r release.zip .
+
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'TVL-Website-WebApp'
-          resource-group-name: 'TVL-Website'
-          package: .
+        run: |
+          az webapp deployment source config-zip \
+            --resource-group TVL-Website \
+            --name TVL-Website-WebApp \
+            --src release.zip
