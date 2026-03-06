@@ -56,5 +56,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'TVL-Website-WebApp'
-          slot-name: 'Production'
+          resource-group-name: 'TVL-Website'
           package: .
