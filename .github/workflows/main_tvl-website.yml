@@ -18,23 +18,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.x'
-          include-prerelease: true
-
-      - name: Build with dotnet
-        run: dotnet build src/VotingPoll.API/VotingPoll.API.csproj --configuration Release
-
-      - name: dotnet publish
-        run: dotnet publish src/VotingPoll.API/VotingPoll.API.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+      - name: Build via Docker and extract published output
+        run: |
+          docker build -f src/VotingPoll.API/Dockerfile -t tvl-build .
+          docker create --name extract tvl-build
+          docker cp extract:/app ./publish
+          docker rm extract
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ./publish
 
   deploy:
     runs-on: ubuntu-latest
