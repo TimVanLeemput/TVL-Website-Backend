@@ -28,8 +28,12 @@ jobs:
         run: >
           dotnet build src/VotingPoll.API/VotingPoll.API.csproj --configuration Release
           -p:EnableDefaultCompileItems=true
+          -p:ImportByWildcardBeforeMicrosoftCommonProps=false
+          -p:ImportByWildcardAfterMicrosoftCommonProps=false
           -p:ImportUserLocationsByWildcardBeforeMicrosoftCommonProps=false
           -p:ImportUserLocationsByWildcardAfterMicrosoftCommonProps=false
+          -p:ImportByWildcardBeforeMicrosoftCommonTargets=false
+          -p:ImportByWildcardAfterMicrosoftCommonTargets=false
           -p:ImportUserLocationsByWildcardBeforeMicrosoftCommonTargets=false
           -p:ImportUserLocationsByWildcardAfterMicrosoftCommonTargets=false
 
@@ -37,8 +41,12 @@ jobs:
         run: >
           dotnet publish src/VotingPoll.API/VotingPoll.API.csproj -c Release
           -p:EnableDefaultCompileItems=true
+          -p:ImportByWildcardBeforeMicrosoftCommonProps=false
+          -p:ImportByWildcardAfterMicrosoftCommonProps=false
           -p:ImportUserLocationsByWildcardBeforeMicrosoftCommonProps=false
           -p:ImportUserLocationsByWildcardAfterMicrosoftCommonProps=false
+          -p:ImportByWildcardBeforeMicrosoftCommonTargets=false
+          -p:ImportByWildcardAfterMicrosoftCommonTargets=false
           -p:ImportUserLocationsByWildcardBeforeMicrosoftCommonTargets=false
           -p:ImportUserLocationsByWildcardAfterMicrosoftCommonTargets=false
           -o "${{env.DOTNET_ROOT}}/myapp"

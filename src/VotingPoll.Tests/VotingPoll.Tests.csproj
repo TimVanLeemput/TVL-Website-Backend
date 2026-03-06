@@ -20,7 +20,7 @@
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\VotingPoll.Core\VotingPoll.Core.csproj" />
     <ProjectReference Include="..\VotingPoll.API\VotingPoll.API.csproj" />
