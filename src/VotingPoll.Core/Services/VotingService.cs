@@ -25,7 +25,7 @@ public class VotingService : IVotingService
         _pollRepository = pollRepository;
         _pollOptionRepository = pollOptionRepository;
     }
-
+//
     public async Task<VoteDto> GetById(int id)
     {
         Vote? vote = await _voteRepository.GetByIdAsync(id);
