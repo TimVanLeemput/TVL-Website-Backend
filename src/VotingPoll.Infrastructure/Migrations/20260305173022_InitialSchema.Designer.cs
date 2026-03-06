@@ -12,8 +12,8 @@ using VotingPoll.Infrastructure.Data;
 namespace VotingPoll.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260305173022_aaa")]
-    partial class aaa
+    [Migration("20260305173022_InitialSchema")]
+    partial class InitialSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
