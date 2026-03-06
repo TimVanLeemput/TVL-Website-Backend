@@ -22,6 +22,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x'
+          include-prerelease: true
 
       - name: Build with dotnet
         run: dotnet build src/VotingPoll.API/VotingPoll.API.csproj --configuration Release
