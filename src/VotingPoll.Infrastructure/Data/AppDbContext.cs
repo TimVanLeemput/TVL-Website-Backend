@@ -41,13 +41,16 @@ public class AppDbContext : DbContext
 
         // Seed data
         modelBuilder.Entity<Poll>().HasData(
-            new Poll { Id = 1, Title = "What's your favorite color?", CreatedAt = new DateTime(2025, 1, 1) }
+            new Poll { Id = 1, Title = "What's your favorite theme?", CreatedAt = new DateTime(2025, 1, 1) }
         );
 
         modelBuilder.Entity<PollOption>().HasData(
-            new PollOption { Id = 1, PollOptionName = "Blue", PollId = 1 },
-            new PollOption { Id = 2, PollOptionName = "Red", PollId = 1 },
-            new PollOption { Id = 3, PollOptionName = "Green", PollId = 1 }
+            new PollOption { Id = 1, PollOptionName = "Stars", PollId = 1 },
+            new PollOption { Id = 2, PollOptionName = "Sea", PollId = 1 },
+            new PollOption { Id = 3, PollOptionName = "Brutalist", PollId = 1 },
+            new PollOption { Id = 4, PollOptionName = "Bugs", PollId = 1 },
+            new PollOption { Id = 5, PollOptionName = "Mushrooms", PollId = 1 },
+            new PollOption { Id = 6, PollOptionName = "Cats", PollId = 1 }
         );
 
         // Index
