@@ -25,10 +25,23 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build src/VotingPoll.API/VotingPoll.API.csproj --configuration Release -p:EnableDefaultCompileItems=true
+        run: >
+          dotnet build src/VotingPoll.API/VotingPoll.API.csproj --configuration Release
+          -p:EnableDefaultCompileItems=true
+          -p:ImportUserLocationsByWildcardBeforeMicrosoftCommonProps=false
+          -p:ImportUserLocationsByWildcardAfterMicrosoftCommonProps=false
+          -p:ImportUserLocationsByWildcardBeforeMicrosoftCommonTargets=false
+          -p:ImportUserLocationsByWildcardAfterMicrosoftCommonTargets=false
 
       - name: dotnet publish
-        run: dotnet publish src/VotingPoll.API/VotingPoll.API.csproj -c Release -p:EnableDefaultCompileItems=true -o "${{env.DOTNET_ROOT}}/myapp"
+        run: >
+          dotnet publish src/VotingPoll.API/VotingPoll.API.csproj -c Release
+          -p:EnableDefaultCompileItems=true
+          -p:ImportUserLocationsByWildcardBeforeMicrosoftCommonProps=false
+          -p:ImportUserLocationsByWildcardAfterMicrosoftCommonProps=false
+          -p:ImportUserLocationsByWildcardBeforeMicrosoftCommonTargets=false
+          -p:ImportUserLocationsByWildcardAfterMicrosoftCommonTargets=false
+          -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
