@@ -7,6 +7,10 @@
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(EnableDefaultCompileItems)' == 'false'">
+    <Compile Include="**/*.cs" Exclude="obj/**;bin/**" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\VotingPoll.Core\VotingPoll.Core.csproj" />
   </ItemGroup>
