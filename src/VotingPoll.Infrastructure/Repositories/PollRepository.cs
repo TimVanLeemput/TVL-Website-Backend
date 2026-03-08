@@ -61,9 +61,9 @@ public class PollRepository : IPollRepository
         bool? isOpen)
     {
         if (isOpen == true)
-            query = query.Where(x => x.ClosesAt > DateTime.UtcNow);
+            query = query.Where(x => x.ClosesAt == null || x.ClosesAt > DateTime.UtcNow);
         else if (isOpen == false)
-            query = query.Where(x => x.ClosesAt < DateTime.UtcNow);
+            query = query.Where(x => x.ClosesAt != null && x.ClosesAt < DateTime.UtcNow);
 
         return query;
     }
@@ -91,5 +91,13 @@ public class PollRepository : IPollRepository
     public async Task<bool> ExistsAsync(int id)
     {
         return await _context.Polls.AnyAsync(p => p.Id == id);
+    }
+
+    public async Task<Poll?> GetByWeekNumberAsync(int weekNumber)
+    {
+        return await _context.Polls
+            .Include(x => x.AllPollOptions)!
+            .ThenInclude(x => x.AllVotes)
+            .FirstOrDefaultAsync(x => x.WeekNumber == weekNumber);
     }
 }

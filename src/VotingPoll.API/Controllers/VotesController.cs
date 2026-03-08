@@ -49,7 +49,7 @@ public class VotesController : ControllerBase
 
     #region POST
 
-    [Authorize]
+    // [Authorize]
     [HttpPost]
     public async Task<ActionResult<VoteConfirmationDto>> Create(int pollId, CreateVoteDto createVoteDto)
     {
@@ -57,7 +57,7 @@ public class VotesController : ControllerBase
         if (!validationResult.IsValid)
             return BadRequest(validationResult);
         string? userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        int userId = int.Parse(userIdClaim!);
+        int? userId = userIdClaim != null ? int.Parse(userIdClaim) : null;
 
         return await _votingService.Create(userId, pollId, createVoteDto);
     }

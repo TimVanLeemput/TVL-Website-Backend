@@ -12,4 +12,5 @@ public interface IUserRepository
     public Task<bool> ExistsAsync(string email);
     public Task UpdateUserAsync();
     public Task DeleteUserAsync(int id);
+    public Task<User?> GetUserByVerificationTokenAsync(string token);
 }

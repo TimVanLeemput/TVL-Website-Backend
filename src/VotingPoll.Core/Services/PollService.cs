@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Globalization;
+using Microsoft.Extensions.Logging;
 using VotingPoll.Core.Entities;
 using VotingPoll.Core.Exceptions;
 using VotingPoll.Core.Interfaces.Repositories;
@@ -32,6 +33,14 @@ public class PollService : IPollService
         PagedList<PollDto> pagedPollList = new PagedList<PollDto>(listOfPolLDtos, totalCount, page, pageSize);
 
         return pagedPollList;
+    }
+
+    public async Task<PollDto> GetCurrentPollAsync()
+    {
+        int currentWeek = ISOWeek.GetWeekOfYear(DateTime.UtcNow);
+        Poll? poll = await _pollRepository.GetByWeekNumberAsync(currentWeek);
+        if (poll == null) throw new PollNotFoundException();
+        return poll.ToDto();
     }
 
     public async Task<PollDto> GetById(int id)

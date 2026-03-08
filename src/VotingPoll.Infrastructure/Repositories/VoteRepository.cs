@@ -56,7 +56,8 @@ public class VoteRepository : IVoteRepository
         throw new NotImplementedException();
     }
 
-    public async Task<bool> UserAlreadyVotedAsync(int pollId, int userId)
+
+    public async Task<bool> UserAlreadyVotedAsync(int pollId, int? userId)
     {
         return await _context.Votes.AnyAsync(v => v.PollId == pollId && v.UserId == userId);
     }

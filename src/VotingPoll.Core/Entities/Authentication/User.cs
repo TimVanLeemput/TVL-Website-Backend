@@ -8,6 +8,10 @@ public class User
     public Role Role { get; set; } = Role.User; // "User" or "Admin"
     public DateTime CreatedAt { get; set; }
 
+    public bool IsVerified { get; set; } = false;
+    public string? VerificationToken { get; set; }
+    public DateTime? VerificationTokenExpiresAt { get; set; }
+
     // Refresh tokens
     public List<RefreshToken?> RefreshTokens { get; set; } = new List<RefreshToken?>();
 }

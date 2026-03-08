@@ -51,6 +51,7 @@ public static class PollMappings
     {
         List<PollDto> listOfPollDtos = polls.Select(poll => new PollDto
         {
+            PollId = poll.Id,
             Title = poll.Title,
             CreatedAt = poll.CreatedAt,
             ClosesAt = poll.ClosesAt
@@ -62,7 +63,9 @@ public static class PollMappings
     {
         List<PollDto> listOfPollDtos = polls.Select(poll => new PollDto
         {
+            PollId = poll.Id,
             Title = poll.Title,
+            TotalVotes = poll.AllPollOptions?.Sum(o => o.AllVotes?.Count ?? 0) ?? 0,
             AllPollOptions = poll.AllPollOptions.ToPollOptionsDto(),
             CreatedAt = poll.CreatedAt,
             ClosesAt = poll.ClosesAt
@@ -96,6 +99,7 @@ public static class PollMappings
                 Id = options.Id,
                 PollOptionName = options.PollOptionName,
                 PollId = options.PollId,
+                AllVotes = options.AllVotes?.Select(v => v.ToDto()).ToList(),
                 TotalVotes = options.AllVotes?.Count ?? 0,
                 VotesPercentage = totalVotes > 0 ? Math.Round((double)options.AllVotes.Count / totalVotes * 100, 1) : 0,
                 CreatedAt = options.CreatedAt

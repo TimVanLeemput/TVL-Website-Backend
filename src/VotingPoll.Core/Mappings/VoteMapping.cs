@@ -5,7 +5,7 @@ namespace VotingPoll.Core.Mappings;
 
 public static class VoteMapping
 {
-    public static Vote ToEntity(this CreateVoteDto createVoteDto, int userId, int pollId)
+    public static Vote ToEntity(this CreateVoteDto createVoteDto, int? userId, int pollId)
     {
         Vote vote = new Vote
         {

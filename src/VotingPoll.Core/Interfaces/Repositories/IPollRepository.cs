@@ -12,4 +12,5 @@ public interface IPollRepository
     Task DeleteAsync(int id);
     Task<bool> ExistsAsync(int id);
     Task UpdatePoll();
+    Task<Poll?> GetByWeekNumberAsync(int weekNumber);
 }

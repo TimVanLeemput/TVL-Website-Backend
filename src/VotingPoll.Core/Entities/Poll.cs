@@ -7,4 +7,5 @@ public class Poll
     public List<PollOption>? AllPollOptions { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? ClosesAt { get; set; }
+    public int? WeekNumber { get; set; }
 }

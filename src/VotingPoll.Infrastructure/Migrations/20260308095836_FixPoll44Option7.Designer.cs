@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VotingPoll.Infrastructure.Data;
@@ -11,9 +12,11 @@ using VotingPoll.Infrastructure.Data;
 namespace VotingPoll.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260308095836_FixPoll44Option7")]
+    partial class FixPoll44Option7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3010,9 +3013,6 @@ namespace VotingPoll.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsVerified")
-                        .HasColumnType("boolean");
-
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("bytea");
@@ -3020,12 +3020,6 @@ namespace VotingPoll.Infrastructure.Migrations
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<string>("VerificationToken")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("VerificationTokenExpiresAt")
-                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -3063,373 +3057,415 @@ namespace VotingPoll.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            ClosesAt = new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAt = new DateTime(2025, 12, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2024, 12, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "What is your favorite type of animal?",
                             WeekNumber = 1
                         },
                         new
                         {
                             Id = 2,
-                            ClosesAt = new DateTime(2026, 1, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAt = new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 1, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Which natural place do you enjoy most?",
                             WeekNumber = 2
                         },
                         new
                         {
                             Id = 3,
-                            ClosesAt = new DateTime(2026, 1, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAt = new DateTime(2026, 1, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 1, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "What kind of holiday sounds best?",
                             WeekNumber = 3
                         },
                         new
                         {
                             Id = 4,
-                            ClosesAt = new DateTime(2026, 1, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAt = new DateTime(2026, 1, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 1, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Which meal do you enjoy the most?",
                             WeekNumber = 4
                         },
                         new
                         {
                             Id = 5,
-                            ClosesAt = new DateTime(2026, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAt = new DateTime(2026, 1, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 2, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 1, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Which season do you like most?",
                             WeekNumber = 5
                         },
                         new
                         {
                             Id = 6,
-                            ClosesAt = new DateTime(2026, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAt = new DateTime(2026, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 2, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Which movie type do you enjoy most?",
                             WeekNumber = 6
                         },
                         new
                         {
                             Id = 7,
-                            ClosesAt = new DateTime(2026, 2, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAt = new DateTime(2026, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 2, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "What kind of music do you listen to most?",
                             WeekNumber = 7
                         },
                         new
                         {
                             Id = 8,
-                            ClosesAt = new DateTime(2026, 2, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAt = new DateTime(2026, 2, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 2, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 2, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Which pet would you choose?",
                             WeekNumber = 8
                         },
                         new
                         {
                             Id = 9,
-                            ClosesAt = new DateTime(2026, 3, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAt = new DateTime(2026, 2, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 2, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Which activity do you enjoy most?",
                             WeekNumber = 9
                         },
                         new
                         {
                             Id = 10,
-                            CreatedAt = new DateTime(2026, 3, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "What drink do you choose most often?",
                             WeekNumber = 10
                         },
                         new
                         {
                             Id = 11,
-                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 3, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Which hobby sounds most fun?",
                             WeekNumber = 11
                         },
                         new
                         {
                             Id = 12,
-                            CreatedAt = new DateTime(2026, 3, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 3, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 3, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Which book genre do you prefer?",
                             WeekNumber = 12
                         },
                         new
                         {
                             Id = 13,
-                            CreatedAt = new DateTime(2026, 3, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 3, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 3, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "What type of game do you enjoy?",
                             WeekNumber = 13
                         },
                         new
                         {
                             Id = 14,
-                            CreatedAt = new DateTime(2026, 3, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 4, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 3, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "How do you relax best?",
                             WeekNumber = 14
                         },
                         new
                         {
                             Id = 15,
-                            CreatedAt = new DateTime(2026, 4, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 4, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 4, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Which weather do you enjoy most?",
                             WeekNumber = 15
                         },
                         new
                         {
                             Id = 16,
-                            CreatedAt = new DateTime(2026, 4, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 4, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 4, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite snack?",
                             WeekNumber = 16
                         },
                         new
                         {
                             Id = 17,
-                            CreatedAt = new DateTime(2026, 4, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 4, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 4, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "How do you like to start the day?",
                             WeekNumber = 17
                         },
                         new
                         {
                             Id = 18,
-                            CreatedAt = new DateTime(2026, 4, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 4, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Ideal way to spend time with friends?",
                             WeekNumber = 18
                         },
                         new
                         {
                             Id = 19,
-                            CreatedAt = new DateTime(2026, 5, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Which outdoor sound do you like most?",
                             WeekNumber = 19
                         },
                         new
                         {
                             Id = 20,
-                            CreatedAt = new DateTime(2026, 5, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 5, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Which creative activity appeals most?",
                             WeekNumber = 20
                         },
                         new
                         {
                             Id = 21,
-                            CreatedAt = new DateTime(2026, 5, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 5, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 5, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite way to travel?",
                             WeekNumber = 21
                         },
                         new
                         {
                             Id = 22,
-                            CreatedAt = new DateTime(2026, 5, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 6, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 5, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "How do you use your phone most?",
                             WeekNumber = 22
                         },
                         new
                         {
                             Id = 23,
-                            CreatedAt = new DateTime(2026, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 6, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 6, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Which animal is most fascinating?",
                             WeekNumber = 23
                         },
                         new
                         {
                             Id = 24,
-                            CreatedAt = new DateTime(2026, 6, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 6, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 6, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite cuisine?",
                             WeekNumber = 24
                         },
                         new
                         {
                             Id = 25,
-                            CreatedAt = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 6, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 6, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Best weekend activity?",
                             WeekNumber = 25
                         },
                         new
                         {
                             Id = 26,
-                            CreatedAt = new DateTime(2026, 6, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 6, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite ice cream flavor?",
                             WeekNumber = 26
                         },
                         new
                         {
                             Id = 27,
-                            CreatedAt = new DateTime(2026, 6, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 7, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite evening activity?",
                             WeekNumber = 27
                         },
                         new
                         {
                             Id = 28,
-                            CreatedAt = new DateTime(2026, 7, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 7, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "How do you drink coffee?",
                             WeekNumber = 28
                         },
                         new
                         {
                             Id = 29,
-                            CreatedAt = new DateTime(2026, 7, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 7, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Best wild animal to observe?",
                             WeekNumber = 29
                         },
                         new
                         {
                             Id = 30,
-                            CreatedAt = new DateTime(2026, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 7, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite natural color palette?",
                             WeekNumber = 30
                         },
                         new
                         {
                             Id = 31,
-                            CreatedAt = new DateTime(2026, 7, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 8, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 7, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite comfort food?",
                             WeekNumber = 31
                         },
                         new
                         {
                             Id = 32,
-                            CreatedAt = new DateTime(2026, 8, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 8, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 8, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Where do you listen to music most?",
                             WeekNumber = 32
                         },
                         new
                         {
                             Id = 33,
-                            CreatedAt = new DateTime(2026, 8, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 8, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 8, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite sport to watch?",
                             WeekNumber = 33
                         },
                         new
                         {
                             Id = 34,
-                            CreatedAt = new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 8, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 8, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Which landscape would you explore?",
                             WeekNumber = 34
                         },
                         new
                         {
                             Id = 35,
-                            CreatedAt = new DateTime(2026, 8, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 8, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "What cat personality do you prefer?",
                             WeekNumber = 35
                         },
                         new
                         {
                             Id = 36,
-                            CreatedAt = new DateTime(2026, 8, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 9, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "How do you like learning new things?",
                             WeekNumber = 36
                         },
                         new
                         {
                             Id = 37,
-                            CreatedAt = new DateTime(2026, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 9, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite way to watch stories?",
                             WeekNumber = 37
                         },
                         new
                         {
                             Id = 38,
-                            CreatedAt = new DateTime(2026, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Are you more?",
                             WeekNumber = 38
                         },
                         new
                         {
                             Id = 39,
-                            CreatedAt = new DateTime(2026, 9, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 9, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite classic game?",
                             WeekNumber = 39
                         },
                         new
                         {
                             Id = 40,
-                            CreatedAt = new DateTime(2026, 9, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 9, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "What matters most on a trip?",
                             WeekNumber = 40
                         },
                         new
                         {
                             Id = 41,
-                            CreatedAt = new DateTime(2026, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite sky moment?",
                             WeekNumber = 41
                         },
                         new
                         {
                             Id = 42,
-                            CreatedAt = new DateTime(2026, 10, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 10, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite ocean animal?",
                             WeekNumber = 42
                         },
                         new
                         {
                             Id = 43,
-                            CreatedAt = new DateTime(2026, 10, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 10, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 10, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite fruit?",
                             WeekNumber = 43
                         },
                         new
                         {
                             Id = 44,
-                            CreatedAt = new DateTime(2026, 10, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 11, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 10, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite hot drink?",
                             WeekNumber = 44
                         },
                         new
                         {
                             Id = 45,
-                            CreatedAt = new DateTime(2026, 11, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 11, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Best quiet activity?",
                             WeekNumber = 45
                         },
                         new
                         {
                             Id = 46,
-                            CreatedAt = new DateTime(2026, 11, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 11, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "What makes a great friend?",
                             WeekNumber = 46
                         },
                         new
                         {
                             Id = 47,
-                            CreatedAt = new DateTime(2026, 11, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 11, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 11, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite creative style?",
                             WeekNumber = 47
                         },
                         new
                         {
                             Id = 48,
-                            CreatedAt = new DateTime(2026, 11, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 12, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 11, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Dream place to stay?",
                             WeekNumber = 48
                         },
                         new
                         {
                             Id = 49,
-                            CreatedAt = new DateTime(2026, 11, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 12, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 12, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite dessert?",
                             WeekNumber = 49
                         },
                         new
                         {
                             Id = 50,
-                            CreatedAt = new DateTime(2026, 12, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 12, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Favorite outdoor activity?",
                             WeekNumber = 50
                         },
                         new
                         {
                             Id = 51,
-                            CreatedAt = new DateTime(2026, 12, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 12, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "What improves life most?",
                             WeekNumber = 51
                         },
                         new
                         {
                             Id = 52,
-                            CreatedAt = new DateTime(2026, 12, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ClosesAt = new DateTime(2025, 12, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 12, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "What brings you the most joy?",
                             WeekNumber = 52
                         });

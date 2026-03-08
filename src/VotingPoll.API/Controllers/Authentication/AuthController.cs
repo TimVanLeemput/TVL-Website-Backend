@@ -56,6 +56,13 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
     
+    [HttpGet("verify")]
+    public async Task<ActionResult<AuthDto.AuthResponse>> VerifyEmail([FromQuery] string token)
+    {
+        AuthDto.AuthResponse response = await _authService.VerifyEmailAsync(token);
+        return Ok(response);
+    }
+
     //todo create revoke dto for User (RevokeUserDto?)
     [HttpPost("revoke")]
     public async Task<ActionResult> Revoke(AuthDto.RevokeUserDto revokeUserDto)

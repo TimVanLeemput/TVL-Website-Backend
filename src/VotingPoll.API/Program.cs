@@ -14,6 +14,8 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using Resend;
 using VotingPoll.API.Middleware;
 using VotingPoll.Core.Interfaces.Authentication;
 using VotingPoll.Core.Interfaces.Repositories;
@@ -23,6 +25,7 @@ using VotingPoll.Core.Interfaces.ServicesInterfaces.Authentication;
 using VotingPoll.Core.Services;
 using VotingPoll.Core.Services.Authentication;
 using VotingPoll.Core.Services.Authentication.Token;
+using VotingPoll.Core.Services.EmailService;
 using VotingPoll.Infrastructure.Data;
 using VotingPoll.Infrastructure.Repositories;
 using VotingPoll.Infrastructure.Repositories.Authentication;
@@ -37,7 +40,21 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 builder.Services.AddControllers();
+
+#region API Endpoints
+
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Voting Poll API",
+        Version = "v1",
+        Description = "The API for the Voting Poll application",
+    });
+});
+
+#endregion
 
 #region Repositories
 
@@ -74,7 +91,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("https://timvanleemput.com", "http://localhost:5000")
+        policy.WithOrigins("https://timvanleemput.com",
+                "http://localhost:5000" /*local backend app*/,
+                "http://localhost:5002" /*Local front end app*/)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -95,20 +114,14 @@ if (!string.IsNullOrEmpty(keyVaultUri))
 
 #region Database Connection
 
-// string databaseProvider = builder.Configuration["DatabaseProvider"] ?? "PostgreSQL-Local";
+// DatabaseProvider selects which connection string to use.
+// Production (appsettings.json):            "DefaultConnection" -> Key Vault secret ConnectionStrings--DefaultConnection (Neon)
+// Local dev (appsettings.Development.json): "PostgreSQL-Local"  -> localhost, never stored in Key Vault
+string databaseProvider = builder.Configuration["DatabaseProvider"]!;
 builder.Services.AddDbContext<AppDbContext>(options =>
     {
-        options.UseNpgsql(builder.Configuration
-                .GetConnectionString("DefaultConnection"),
+        options.UseNpgsql(builder.Configuration.GetConnectionString(databaseProvider),
             b => b.MigrationsAssembly("VotingPoll.Infrastructure"));
-        // if (databaseProvider == "PostgreSQL")
-        // {
-        //     options.UseNpgsql(builder.Configuration["Neon:ConnectionString"], // -- to redeploy in dev env
-        //         b => b.MigrationsAssembly("VotingPoll.Infrastructure"));
-        // }
-        // else
-        // {
-        // }
     }
 );
 
@@ -136,6 +149,19 @@ builder.Services.AddAuthorization();
 
 #endregion
 
+#region Resend
+
+builder.Services.AddHttpClient<ResendClient>();
+builder.Services.Configure<ResendClientOptions>(options =>
+{
+    options.ApiToken = builder.Configuration["Resend:ApiKey"];
+});
+builder.Services.AddTransient<IResend, ResendClient>();
+
+builder.Services.AddTransient<EmailService>();
+
+#endregion
+
 #region Health Checks
 
 builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>("DB Health Check");
@@ -154,12 +180,12 @@ builder.Services.AddRateLimiter(options =>
             factory: partition => new FixedWindowRateLimiterOptions
             {
                 AutoReplenishment = true,
-                PermitLimit = 10,
+                PermitLimit = 40,
                 QueueLimit = 0,
                 Window = TimeSpan.FromMinutes(1)
             }));
 });
-
+//idniwjqodqodnoqndononononijfijfefejfeijf ei dont think this sound ery
 builder.WebHost.ConfigureKestrel(options => { options.Limits.MaxRequestBodySize = 10_240; });
 
 #endregion
@@ -171,6 +197,12 @@ WebApplication app = builder.Build();
 // -------------------------------------------------APP IS RUNNING AFTER THIS POINT---------------------------------
 
 #region Middleware
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseCors("AllowFrontend");
 

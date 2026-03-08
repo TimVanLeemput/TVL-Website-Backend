@@ -31,6 +31,13 @@ public class PollsController : ControllerBase
 
     #region GET
 
+    [HttpGet("current")]
+    public async Task<ActionResult<PollDto>> GetCurrentPoll()
+    {
+        PollDto pollDto = await _pollService.GetCurrentPollAsync();
+        return Ok(pollDto);
+    }
+
     [HttpGet]
     public async Task<ActionResult<PagedList<PollDto>>> GetAll([FromQuery] bool? isOpen = null, int? page = null,
         int? pageSize = null)
@@ -38,7 +45,7 @@ public class PollsController : ControllerBase
         return await _pollService.GetAll(isOpen, page, pageSize);
     }
 
-    [Authorize]
+    // [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<PollDto>> GetById(int id)
     {

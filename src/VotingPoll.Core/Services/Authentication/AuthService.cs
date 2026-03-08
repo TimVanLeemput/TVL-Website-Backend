@@ -8,6 +8,7 @@ using VotingPoll.Core.Interfaces.Authentication;
 using VotingPoll.Core.Interfaces.Repositories.Authentication;
 using VotingPoll.Core.Interfaces.ServicesInterfaces.Authentication;
 using VotingPoll.Core.Models.DTOs.Authentication;
+using EmailSvc = VotingPoll.Core.Services.EmailService.EmailService;
 
 namespace VotingPoll.Core.Services.Authentication;
 
@@ -16,31 +17,28 @@ public class AuthService : IAuthService
     private readonly ITokenService _tokenService;
     private readonly IUserRepository _userRepository;
     private readonly ILogger<AuthService> _logger;
-
     private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly EmailSvc _emailService;
 
     public AuthService(ITokenService tokenService, IUserRepository userRepository, ILogger<AuthService> logger,
-        IRefreshTokenRepository refreshTokenRepository)
+        IRefreshTokenRepository refreshTokenRepository, EmailSvc emailService)
     {
         _tokenService = tokenService;
         _userRepository = userRepository;
         _logger = logger;
         _refreshTokenRepository = refreshTokenRepository;
+        _emailService = emailService;
     }
 
     public async Task<AuthDto.AuthResponse> RegisterAsync(RegisterRequest request)
     {
-        //Check duplicate email
         if (_userRepository.ExistsAsync(request.Email).Result)
-        {
             throw new EmailAlreadyExistsException($"{request.Email}");
-        }
 
-        // Cryptography
-        string passWord = request.Password;
         byte[] salt = CryptographyHelper.GenerateSalt(16);
-        byte[] hashedPassword = CryptographyHelper.HashPassword(passWord, salt);
-        _logger.LogInformation($"Generated hash: {Convert.ToBase64String(hashedPassword)}");
+        byte[] hashedPassword = CryptographyHelper.HashPassword(request.Password, salt);
+
+        string verificationToken = Guid.NewGuid().ToString();
 
         User createdUser = new User
         {
@@ -49,23 +47,52 @@ public class AuthService : IAuthService
             PasswordHash = hashedPassword,
             Role = Role.User,
             CreatedAt = DateTime.UtcNow,
-            RefreshTokens = new List<RefreshToken>()
+            RefreshTokens = new List<RefreshToken>(),
+            IsVerified = false,
+            VerificationToken = verificationToken,
+            VerificationTokenExpiresAt = DateTime.UtcNow.AddHours(24),
         };
 
         await _userRepository.CreateUserAsync(createdUser);
         _logger.LogInformation($"Created user with id: {createdUser.Id}");
 
-        string accessToken = await _tokenService.GenerateAccessToken(createdUser);
-        RefreshToken refreshToken = await _tokenService.GenerateRefreshToken();
-        string refreshTokenString = refreshToken.Token;
+        try
+        {
+            await _emailService.SendVerificationEmailAsync(createdUser.Email, verificationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Failed to send verification email to {createdUser.Email}");
+        }
 
-        AuthDto.AuthResponse authResponse = new AuthDto.AuthResponse
+        // Return empty tokens — user must verify email before logging in
+        return new AuthDto.AuthResponse { AccessToken = null, RefreshToken = null };
+    }
+
+    public async Task<AuthDto.AuthResponse> VerifyEmailAsync(string token)
+    {
+        User? user = await _userRepository.GetUserByVerificationTokenAsync(token);
+
+        if (user == null || user.VerificationTokenExpiresAt < DateTime.UtcNow)
+            throw new InvalidVerificationTokenException();
+
+        user.IsVerified = true;
+        user.VerificationToken = null;
+        user.VerificationTokenExpiresAt = null;
+
+        await _userRepository.UpdateUserAsync();
+        _logger.LogInformation($"Email verified for user id: {user.Id}");
+
+        string accessToken = await _tokenService.GenerateAccessToken(user);
+        RefreshToken refreshToken = await _tokenService.GenerateRefreshToken();
+        user.RefreshTokens.Add(refreshToken);
+        await _userRepository.UpdateUserAsync();
+
+        return new AuthDto.AuthResponse
         {
             AccessToken = accessToken,
-            RefreshToken = refreshTokenString
+            RefreshToken = refreshToken.Token
         };
-
-        return await Task.FromResult(authResponse);
     }
 
     public async Task<AuthDto.AuthResponse> LoginAsync(LoginRequest request)
@@ -73,11 +100,12 @@ public class AuthService : IAuthService
         _logger.LogInformation($"Login attempt with email: {request.Email}");
         bool userExists = _userRepository.ExistsAsync(request.Email).Result;
         if (!userExists)
-        {
             throw new InvalidCredentialsException();
-        }
 
         User? user = await _userRepository.GetUserByEmailAsync(request.Email);
+
+        if (!user!.IsVerified)
+            throw new EmailNotVerifiedException();
         string accessToken = await _tokenService.GenerateAccessToken(user);
 
         RefreshToken refreshToken = await _tokenService.GenerateRefreshToken();

@@ -47,14 +47,11 @@ public class VotingService : IVotingService
         return pagedListOfVotesDto;
     }
 
-    public async Task<VoteConfirmationDto> Create(int userId, int pollId, CreateVoteDto createVoteDto)
+    public async Task<VoteConfirmationDto> Create(int? userId, int pollId, CreateVoteDto createVoteDto)
     {
         Poll? poll = await _pollRepository.GetByIdAsync(pollId);
         if (poll == null)
             throw new PollNotFoundException(pollId);
-
-        if (poll.ClosesAt < DateTime.UtcNow)
-            throw new PollClosedException(pollId);
 
         bool userAlreadyVoted = await _voteRepository.UserAlreadyVotedAsync(pollId, userId);
         if (userAlreadyVoted)

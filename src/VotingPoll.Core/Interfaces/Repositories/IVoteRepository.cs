@@ -9,5 +9,5 @@ public interface IVoteRepository
     public Task<Vote?> GetByIdAsync(int voteId);
     public Task<Vote> CreateAsync(Vote vote);
     public Task<bool> ExistsAsync(int voteId);
-    public Task<bool> UserAlreadyVotedAsync(int pollId, int userId);
+    public Task<bool> UserAlreadyVotedAsync(int pollId, int? userId);
 }

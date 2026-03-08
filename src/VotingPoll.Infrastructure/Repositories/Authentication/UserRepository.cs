@@ -73,4 +73,10 @@ public class UserRepository : IUserRepository
         _context.Users.Remove(userToDelete);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<User?> GetUserByVerificationTokenAsync(string token)
+    {
+        return await _context.Users
+            .FirstOrDefaultAsync(x => x.VerificationToken == token);
+    }
 }
