@@ -37,6 +37,7 @@ public class PollService : IPollService
 
     public async Task<PollDto> GetCurrentPollAsync()
     {
+        await _pollRepository.CloseStaleOpenPollsAsync();
         int currentWeek = ISOWeek.GetWeekOfYear(DateTime.UtcNow);
         Poll? poll = await _pollRepository.GetByWeekNumberAsync(currentWeek);
         if (poll == null) throw new PollNotFoundException();

@@ -13,4 +13,5 @@ public interface IPollRepository
     Task<bool> ExistsAsync(int id);
     Task UpdatePoll();
     Task<Poll?> GetByWeekNumberAsync(int weekNumber);
+    Task CloseStaleOpenPollsAsync();
 }

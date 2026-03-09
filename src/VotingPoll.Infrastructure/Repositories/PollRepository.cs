@@ -93,6 +93,20 @@ public class PollRepository : IPollRepository
         return await _context.Polls.AnyAsync(p => p.Id == id);
     }
 
+    public async Task CloseStaleOpenPollsAsync()
+    {
+        DateTime now = DateTime.UtcNow;
+        List<Poll> stalePolls = await _context.Polls
+            .Where(p => p.ClosesAt == null && p.CreatedAt.AddDays(7) < now)
+            .ToListAsync();
+
+        foreach (Poll poll in stalePolls)
+            poll.ClosesAt = poll.CreatedAt.AddDays(7);
+
+        if (stalePolls.Count > 0)
+            await _context.SaveChangesAsync();
+    }
+
     public async Task<Poll?> GetByWeekNumberAsync(int weekNumber)
     {
         return await _context.Polls
