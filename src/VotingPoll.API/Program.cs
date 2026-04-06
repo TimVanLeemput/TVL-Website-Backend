@@ -103,8 +103,8 @@ builder.Services.AddCors(options =>
 
 #region Azure
 
-string keyVaultUri = builder.Configuration["KeyVaultUrl"]; // Empty on Railway
-if (!string.IsNullOrEmpty(keyVaultUri))
+string keyVaultUri = (builder.Configuration["KeyVaultUrl"] ?? "").Trim();
+if (!string.IsNullOrWhiteSpace(keyVaultUri) && Uri.IsWellFormedUriString(keyVaultUri, UriKind.Absolute))
 {
     SecretClient secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
     builder.Configuration.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
