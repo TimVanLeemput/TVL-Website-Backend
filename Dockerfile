@@ -11,7 +11,7 @@ EXPOSE 8080
 # This image is much larger (~900MB vs ~200MB) because it includes
 # the compiler, NuGet, dotnet CLI — everything needed to BUILD.
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /src
+WORKDIR /
 
 # Copy ONLY the .csproj files first and restore.
 # Docker caches each step. If .csproj hasn't changed, Docker skips
