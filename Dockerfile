@@ -19,7 +19,7 @@ WORKDIR /src
 COPY ["src/VotingPoll.API/VotingPoll.API.csproj", "src/VotingPoll.API/"]
 COPY ["src/VotingPoll.Core/VotingPoll.Core.csproj", "src/VotingPoll.Core/"]
 COPY ["src/VotingPoll.Infrastructure/VotingPoll.Infrastructure.csproj", "src/VotingPoll.Infrastructure/"]
-RUN dotnet restore "src/VotingPoll.API/VotingPoll.API.csproj" -c Release
+RUN dotnet restore "src/VotingPoll.API/VotingPoll.API.csproj" -p:Configuration=Release
 
 # Now copy everything else and publish a Release build.
 COPY . .
