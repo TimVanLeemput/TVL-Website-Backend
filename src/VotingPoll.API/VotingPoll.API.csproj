@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
     <ProjectReference Include="..\VotingPoll.Core\VotingPoll.Core.csproj" />
@@ -30,6 +30,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <UserSecretsId>bdd9f449-b7aa-4bdc-bed3-1150d47dad50</UserSecretsId>
   </PropertyGroup>
 
 </Project>
