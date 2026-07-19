@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VotingPoll.Core.Entities;
 using VotingPoll.Core.Entities.Authentication;
+using VotingPoll.Core.Entities.Training;
 
 namespace VotingPoll.Infrastructure.Data;
 
@@ -15,6 +16,9 @@ public class AppDbContext : DbContext
     public DbSet<Vote> Votes { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<TrainingSession> TrainingSessions { get; set; }
+    public DbSet<TrainingSessionStep> TrainingSessionSteps { get; set; }
+    public DbSet<TrainingSessionError> TrainingSessionErrors { get; set; }
 
     // Fluent API
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -131,5 +135,22 @@ public class AppDbContext : DbContext
         // -- "For the Vote table, create an index on the combination of PollId and
         //     UserId, and make sure that combination is unique - no duplicates allowed. This also improved query performance" -- 
         modelBuilder.Entity<Vote>().HasIndex(v => new { v.PollId, v.UserId }).IsUnique();
+
+        // Training sessions (TVL-VR Chapter 8)
+        modelBuilder.Entity<TrainingSession>().HasIndex(ts => ts.SessionId).IsUnique();
+        modelBuilder.Entity<TrainingSession>().HasIndex(ts => ts.ProcedureId);
+        modelBuilder.Entity<TrainingSession>().HasIndex(ts => ts.StartedAtUtc);
+
+        modelBuilder.Entity<TrainingSession>()
+            .HasMany(ts => ts.Steps)
+            .WithOne(s => s.TrainingSession)
+            .HasForeignKey(s => s.TrainingSessionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TrainingSession>()
+            .HasMany(ts => ts.Errors)
+            .WithOne(e => e.TrainingSession)
+            .HasForeignKey(e => e.TrainingSessionId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
