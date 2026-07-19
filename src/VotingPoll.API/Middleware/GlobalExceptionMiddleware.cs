@@ -134,6 +134,20 @@ public class GlobalExceptionMiddleware
 
         #endregion
 
+        #region TrainingExceptions
+
+        catch (TrainingSessionNotFoundException ex)
+        {
+            context.Response.StatusCode = 404;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                error = ex.Message,
+                trainingSessionId = ex.TrainingSessionId
+            });
+        }
+
+        #endregion
+
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception");

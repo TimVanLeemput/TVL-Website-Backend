@@ -65,6 +65,8 @@ builder.Services.AddScoped<IPollRepository, PollRepository>();
 builder.Services.AddScoped<IPollOptionRepository, PollOptionRepository>();
 builder.Services.AddScoped<IVoteRepository, VoteRepository>();
 
+builder.Services.AddScoped<ITrainingSessionRepository, TrainingSessionRepository>();
+
 #endregion
 
 #region Custom Services
@@ -76,6 +78,8 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IVotingService, VotingService>();
 builder.Services.AddScoped<IPollService, PollService>();
 builder.Services.AddScoped<IPollOptionService, PollOptionService>();
+
+builder.Services.AddScoped<ITrainingSessionService, TrainingSessionService>();
 
 #endregion
 
