@@ -97,7 +97,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("https://timvanleemput.com",
                 "http://localhost:5000" /*local backend app*/,
-                "http://localhost:5002" /*Local front end app*/)
+                "http://localhost:5002" /*Local front end app*/,
+                "http://localhost:4200" /*TVL-Training-Dashboard dev server*/)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
