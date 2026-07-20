@@ -96,6 +96,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins("https://timvanleemput.com",
+                "https://dashboard.timvanleemput.com" /*TVL-Training-Dashboard, live*/,
                 "http://localhost:5000" /*local backend app*/,
                 "http://localhost:5002" /*Local front end app*/,
                 "http://localhost:4200" /*TVL-Training-Dashboard dev server*/)
