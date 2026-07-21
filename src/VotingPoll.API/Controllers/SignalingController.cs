@@ -1,16 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using VotingPoll.API.Filters;
 using VotingPoll.API.Streaming;
+using System.Linq;
 
 namespace VotingPoll.API.Controllers;
 
 /// <summary>
 /// WebRTC signaling relay for the live-watch stream (headset view -> dashboard viewer).
 /// Pure handshake plumbing: SDP offer/answer and trickled ICE candidates, held in memory
-/// only, one session at a time. No training data touches this controller — see
-/// <see cref="TrainingSessionsController"/> for that. Unity-facing actions use the same
-/// device-key auth as session upload; the viewer (dashboard) side is unauthenticated for
-/// now, matching the dashboard's lack of a live-watch consent/instructor-role system yet.
+/// only. No training data touches this controller — see <see cref="TrainingSessionsController"/>
+/// for that. Unity-facing actions use the same device-key auth as session upload; the
+/// viewer (dashboard) side is unauthenticated for now, matching the dashboard's lack of a
+/// live-watch consent/instructor-role system yet.
 /// </summary>
 [ApiController]
 [Route("api/streaming")]
@@ -23,7 +24,7 @@ public class SignalingController : ControllerBase
         _store = store;
     }
 
-    /// <summary>Unity starts a stream by posting its SDP offer.</summary>
+    /// <summary>Unity starts a stream by posting its SDP offer (optionally labeled, e.g. the procedure title).</summary>
     [RequireDeviceKey]
     [HttpPost("offer")]
     public ActionResult<object> PostOffer(SdpMessage message)
@@ -31,15 +32,26 @@ public class SignalingController : ControllerBase
         if (string.IsNullOrWhiteSpace(message.Sdp))
             return BadRequest();
 
-        SignalingSession session = _store.CreateOffer(message.Sdp);
+        SignalingSession session = _store.CreateOffer(message.Sdp, message.Label);
         return Ok(new { sessionId = session.SessionId });
     }
 
-    /// <summary>The viewer polls for the current offer to know a stream is live.</summary>
-    [HttpGet("offer")]
-    public ActionResult<object> GetOffer()
+    /// <summary>The dashboard's live-sessions list: every stream currently live, newest first.</summary>
+    [HttpGet("sessions")]
+    public ActionResult<IReadOnlyList<LiveSessionSummary>> GetActiveSessions()
     {
-        SignalingSession? session = _store.GetCurrent();
+        IReadOnlyList<LiveSessionSummary> summaries = _store.GetActive()
+            .Select(s => new LiveSessionSummary { SessionId = s.SessionId, Label = s.Label, StartedAtUtc = s.CreatedAtUtc })
+            .ToList();
+
+        return Ok(summaries);
+    }
+
+    /// <summary>The viewer fetches a specific session's offer once it's picked from the live-sessions list.</summary>
+    [HttpGet("offer")]
+    public ActionResult<object> GetOffer(string sessionId)
+    {
+        SignalingSession? session = _store.Get(sessionId);
         if (session?.OfferSdp == null)
             return NoContent();
 
@@ -61,8 +73,8 @@ public class SignalingController : ControllerBase
     [HttpGet("answer")]
     public ActionResult<object> GetAnswer(string sessionId)
     {
-        SignalingSession? session = _store.GetCurrent();
-        if (session == null || session.SessionId != sessionId || session.AnswerSdp == null)
+        SignalingSession? session = _store.Get(sessionId);
+        if (session?.AnswerSdp == null)
             return NoContent();
 
         return Ok(new { sdp = session.AnswerSdp });

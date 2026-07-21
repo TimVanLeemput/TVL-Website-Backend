@@ -184,17 +184,17 @@ builder.Services.AddRateLimiter(options =>
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
         RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey: httpContext.User.Identity?.Name ??
-                          httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            partitionKey: (httpContext.Request.Path.StartsWithSegments("/api/streaming") ? "streaming:" : "api:") +
+                          (httpContext.User.Identity?.Name ??
+                           httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown"),
             factory: partition => new FixedWindowRateLimiterOptions
             {
                 AutoReplenishment = true,
-                PermitLimit = 40,
+                PermitLimit = partition.StartsWith("streaming:", StringComparison.Ordinal) ? 300 : 40,
                 QueueLimit = 0,
                 Window = TimeSpan.FromMinutes(1)
             }));
 });
-//idniwjqodqodnoqndononononijfijfefejfeijf ei dont think this sound ery
 builder.WebHost.ConfigureKestrel(options => { options.Limits.MaxRequestBodySize = 10_240; });
 
 #endregion

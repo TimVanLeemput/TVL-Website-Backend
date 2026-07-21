@@ -4,22 +4,33 @@ namespace VotingPoll.API.Streaming;
 public sealed class InMemorySignalingSessionStore : ISignalingSessionStore
 {
     private readonly object _lock = new();
-    private SignalingSession? _current;
+    private readonly Dictionary<string, SignalingSession> _sessions = new();
 
-    public SignalingSession CreateOffer(string offerSdp)
+    public SignalingSession CreateOffer(string offerSdp, string? label)
+    {
+        SignalingSession session = new() { OfferSdp = offerSdp, Label = label };
+
+        lock (_lock)
+        {
+            _sessions[session.SessionId] = session;
+        }
+
+        return session;
+    }
+
+    public SignalingSession? Get(string sessionId)
     {
         lock (_lock)
         {
-            _current = new SignalingSession { OfferSdp = offerSdp };
-            return _current;
+            return _sessions.GetValueOrDefault(sessionId);
         }
     }
 
-    public SignalingSession? GetCurrent()
+    public IReadOnlyList<SignalingSession> GetActive()
     {
         lock (_lock)
         {
-            return _current;
+            return _sessions.Values.OrderByDescending(s => s.CreatedAtUtc).ToList();
         }
     }
 
@@ -27,10 +38,10 @@ public sealed class InMemorySignalingSessionStore : ISignalingSessionStore
     {
         lock (_lock)
         {
-            if (_current == null || _current.SessionId != sessionId)
+            if (!_sessions.TryGetValue(sessionId, out SignalingSession? session))
                 return false;
 
-            _current.AnswerSdp = answerSdp;
+            session.AnswerSdp = answerSdp;
             return true;
         }
     }
@@ -39,11 +50,11 @@ public sealed class InMemorySignalingSessionStore : ISignalingSessionStore
     {
         lock (_lock)
         {
-            if (_current == null || _current.SessionId != sessionId)
+            if (!_sessions.TryGetValue(sessionId, out SignalingSession? session))
                 return false;
 
             // Unity's candidates queue up for the viewer to poll, and vice versa.
-            (fromUnity ? _current.IceForViewer : _current.IceForUnity).Enqueue(candidate);
+            (fromUnity ? session.IceForViewer : session.IceForUnity).Enqueue(candidate);
             return true;
         }
     }
@@ -52,11 +63,11 @@ public sealed class InMemorySignalingSessionStore : ISignalingSessionStore
     {
         lock (_lock)
         {
-            if (_current == null || _current.SessionId != sessionId)
+            if (!_sessions.TryGetValue(sessionId, out SignalingSession? session))
                 return Array.Empty<IceCandidateMessage>();
 
             System.Collections.Concurrent.ConcurrentQueue<IceCandidateMessage> queue =
-                forUnity ? _current.IceForUnity : _current.IceForViewer;
+                forUnity ? session.IceForUnity : session.IceForViewer;
 
             List<IceCandidateMessage> drained = new();
             while (queue.TryDequeue(out IceCandidateMessage? candidate))
@@ -70,8 +81,7 @@ public sealed class InMemorySignalingSessionStore : ISignalingSessionStore
     {
         lock (_lock)
         {
-            if (_current != null && _current.SessionId == sessionId)
-                _current = null;
+            _sessions.Remove(sessionId);
         }
     }
 }

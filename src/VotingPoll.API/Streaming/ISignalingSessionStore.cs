@@ -1,16 +1,20 @@
 namespace VotingPoll.API.Streaming;
 
 /// <summary>
-/// Holds exactly one active headset-to-viewer signaling session at a time — this app has
-/// one trainee headset, so there is never a session to disambiguate between.
+/// Holds every active headset-to-viewer signaling session. In practice usually zero or
+/// one (one headset), but kept keyed rather than singular so the dashboard's live-sessions
+/// list and multiple simultaneous streams aren't precluded.
 /// </summary>
 public interface ISignalingSessionStore
 {
-    /// <summary>Starts a new session (replacing any previous one) with Unity's offer.</summary>
-    SignalingSession CreateOffer(string offerSdp);
+    /// <summary>Starts a new session with Unity's offer.</summary>
+    SignalingSession CreateOffer(string offerSdp, string? label);
 
-    /// <summary>The current session, if a headset has posted an offer.</summary>
-    SignalingSession? GetCurrent();
+    /// <summary>A specific session, if it exists.</summary>
+    SignalingSession? Get(string sessionId);
+
+    /// <summary>Every currently active session, newest first -- the dashboard's live-sessions list.</summary>
+    IReadOnlyList<SignalingSession> GetActive();
 
     /// <summary>Stores the viewer's answer against the given session. False if the session is gone/mismatched.</summary>
     bool TrySetAnswer(string sessionId, string answerSdp);
@@ -21,6 +25,6 @@ public interface ISignalingSessionStore
     /// <summary>Drains (removes and returns) the candidates waiting for one side.</summary>
     IReadOnlyList<IceCandidateMessage> DrainIceCandidates(string sessionId, bool forUnity);
 
-    /// <summary>Ends the session if it matches the given id.</summary>
+    /// <summary>Ends the session if it exists.</summary>
     void Clear(string sessionId);
 }
