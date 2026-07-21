@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VotingPoll.API.Filters;
 using VotingPoll.API.Streaming;
@@ -10,8 +11,8 @@ namespace VotingPoll.API.Controllers;
 /// Pure handshake plumbing: SDP offer/answer and trickled ICE candidates, held in memory
 /// only. No training data touches this controller — see <see cref="TrainingSessionsController"/>
 /// for that. Unity-facing actions use the same device-key auth as session upload; the
-/// viewer (dashboard) side is unauthenticated for now, matching the dashboard's lack of a
-/// live-watch consent/instructor-role system yet.
+/// viewer (dashboard) side requires the same instructor JWT login as the rest of the
+/// dashboard, since live-watch is now a gated tab rather than a public route.
 /// </summary>
 [ApiController]
 [Route("api/streaming")]
@@ -37,6 +38,7 @@ public class SignalingController : ControllerBase
     }
 
     /// <summary>The dashboard's live-sessions list: every stream currently live, newest first.</summary>
+    [Authorize]
     [HttpGet("sessions")]
     public ActionResult<IReadOnlyList<LiveSessionSummary>> GetActiveSessions()
     {
@@ -48,6 +50,7 @@ public class SignalingController : ControllerBase
     }
 
     /// <summary>The viewer fetches a specific session's offer once it's picked from the live-sessions list.</summary>
+    [Authorize]
     [HttpGet("offer")]
     public ActionResult<object> GetOffer(string sessionId)
     {
@@ -59,6 +62,7 @@ public class SignalingController : ControllerBase
     }
 
     /// <summary>The viewer answers the offer.</summary>
+    [Authorize]
     [HttpPost("answer")]
     public ActionResult PostAnswer(string sessionId, SdpMessage message)
     {
@@ -92,6 +96,7 @@ public class SignalingController : ControllerBase
     }
 
     /// <summary>The viewer trickles an ICE candidate for Unity.</summary>
+    [Authorize]
     [HttpPost("ice/viewer")]
     public ActionResult PostIceFromViewer(string sessionId, IceCandidateMessage message)
     {
@@ -110,6 +115,7 @@ public class SignalingController : ControllerBase
     }
 
     /// <summary>The viewer drains ICE candidates trickled by Unity.</summary>
+    [Authorize]
     [HttpGet("ice/viewer")]
     public ActionResult<IReadOnlyList<IceCandidateMessage>> GetIceForViewer(string sessionId)
     {
