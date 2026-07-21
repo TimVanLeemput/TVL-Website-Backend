@@ -7,7 +7,9 @@ namespace VotingPoll.API.Streaming;
 /// </summary>
 public interface ISignalingSessionStore
 {
-    /// <summary>Starts a new session with Unity's offer.</summary>
+    /// <summary>Starts a new session with Unity's offer, replacing any prior session(s) --
+    /// there is only ever one headset, so an earlier session still on record at this point
+    /// is stale (its stream ended without a clean /stop, e.g. the app was killed).</summary>
     SignalingSession CreateOffer(string offerSdp, string? label);
 
     /// <summary>A specific session, if it exists.</summary>

@@ -12,6 +12,11 @@ public sealed class InMemorySignalingSessionStore : ISignalingSessionStore
 
         lock (_lock)
         {
+            // Exactly one device key exists (TrainingApi:DeviceKey), i.e. exactly one headset
+            // can ever be streaming -- a new offer always means the previous stream ended
+            // (or was abandoned, e.g. the app got killed rather than toggling watch off), so
+            // any prior sessions are stale and would otherwise pile up in the live-sessions list.
+            _sessions.Clear();
             _sessions[session.SessionId] = session;
         }
 
