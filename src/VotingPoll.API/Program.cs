@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Resend;
 using VotingPoll.API.Middleware;
+using VotingPoll.API.Streaming;
 using VotingPoll.Core.Interfaces.Authentication;
 using VotingPoll.Core.Interfaces.Repositories;
 using VotingPoll.Core.Interfaces.Repositories.Authentication;
@@ -80,6 +81,9 @@ builder.Services.AddScoped<IPollService, PollService>();
 builder.Services.AddScoped<IPollOptionService, PollOptionService>();
 
 builder.Services.AddScoped<ITrainingSessionService, TrainingSessionService>();
+
+// In-memory only, one session at a time -- see ISignalingSessionStore.
+builder.Services.AddSingleton<ISignalingSessionStore, InMemorySignalingSessionStore>();
 
 #endregion
 
